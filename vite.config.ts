@@ -12,7 +12,10 @@ const solidStartOptions: SolidStartOptionsWithDevOverlay = {
 };
 
 export default defineConfig({
-  plugins: [solidStart(solidStartOptions),
-    nitro()
-  ]
+  plugins: [
+    solidStart(solidStartOptions),
+    nitro({
+      preset: process.env.VERCEL ? "vercel" : "node-server",
+    }),
+  ],
 });
