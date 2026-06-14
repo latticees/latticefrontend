@@ -31,6 +31,63 @@ type PortfolioPageStatus = "loading" | "ready" | "error" | "unauthenticated";
 type CashBalanceStatus = "idle" | "loading" | "ready" | "error";
 type PortfolioTab = "active" | "history";
 type PortfolioRange = "1H" | "24H" | "7D" | "30D" | "ALL";
+const PORTFOLIO_PAGE_CACHE_PREFIX = "lattice-portfolio-page/v1:";
+const PORTFOLIO_PAGE_CACHE_TTL_MS = 30_000;
+
+interface CachedPortfolioPage {
+  cached_at: number;
+  value: MyPortfolioResponse;
+}
+
+function portfolioPageCacheKey(session: StoredAuthSession): string {
+  return `${PORTFOLIO_PAGE_CACHE_PREFIX}${session.user.id}`;
+}
+
+function readCachedPortfolioPage(session: StoredAuthSession): MyPortfolioResponse | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  try {
+    const raw = window.sessionStorage.getItem(portfolioPageCacheKey(session));
+
+    if (!raw) {
+      return null;
+    }
+
+    const cached = JSON.parse(raw) as Partial<CachedPortfolioPage>;
+
+    if (
+      typeof cached.cached_at !== "number" ||
+      Date.now() - cached.cached_at > PORTFOLIO_PAGE_CACHE_TTL_MS ||
+      !cached.value
+    ) {
+      return null;
+    }
+
+    return cached.value;
+  } catch {
+    return null;
+  }
+}
+
+function writeCachedPortfolioPage(session: StoredAuthSession, value: MyPortfolioResponse) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  try {
+    window.sessionStorage.setItem(
+      portfolioPageCacheKey(session),
+      JSON.stringify({
+        cached_at: Date.now(),
+        value,
+      } satisfies CachedPortfolioPage),
+    );
+  } catch {
+    // Runtime cache is an optimization only.
+  }
+}
 
 function formatUsdAmount(value: number | string): string {
   const parsedValue = typeof value === "number" ? value : Number(value);
@@ -313,9 +370,10 @@ export default function PortfolioRoute() {
       return;
     }
 
-    const token = session()?.token?.trim() ?? "";
+    const activeSession = session();
+    const token = activeSession?.token?.trim() ?? "";
 
-    if (token.length === 0) {
+    if (!activeSession || token.length === 0) {
       setPortfolio(null);
       setError(null);
       setStatus("unauthenticated");
@@ -323,7 +381,15 @@ export default function PortfolioRoute() {
     }
 
     const requestId = ++portfolioRequestVersion;
-    setStatus("loading");
+    const cachedPortfolio = readCachedPortfolioPage(activeSession);
+
+    if (cachedPortfolio) {
+      setPortfolio(cachedPortfolio);
+      setStatus("ready");
+    } else {
+      setStatus("loading");
+    }
+
     setError(null);
 
     void orderClient
@@ -334,6 +400,7 @@ export default function PortfolioRoute() {
         }
 
         setPortfolio(response);
+        writeCachedPortfolioPage(activeSession, response);
         setStatus("ready");
       })
       .catch(caughtError => {
@@ -341,11 +408,14 @@ export default function PortfolioRoute() {
           return;
         }
 
-        setPortfolio(null);
+        if (!cachedPortfolio) {
+          setPortfolio(null);
+          setStatus("error");
+        }
+
         setError(
           caughtError instanceof Error ? caughtError.message : "Unable to load your portfolio.",
         );
-        setStatus("error");
       });
   });
 
@@ -454,7 +524,7 @@ export default function PortfolioRoute() {
 
   return (
     <div class="pm-page">
-      <Title>{`${t("portfolio.title")} | Sabimarket`}</Title>
+      <Title>{`${t("portfolio.title")} | Lattice`}</Title>
       <Navbar />
 
       <main class="pm-detail pm-portfolio">

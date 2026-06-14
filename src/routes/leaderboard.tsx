@@ -11,6 +11,59 @@ import {
 } from "~/lib/market/index.ts";
 
 type LeaderboardPageStatus = "loading" | "ready" | "error";
+const LEADERBOARD_PAGE_CACHE_KEY = "lattice-leaderboard-page/v1";
+const LEADERBOARD_PAGE_CACHE_TTL_MS = 30_000;
+
+interface CachedLeaderboardPage {
+  cached_at: number;
+  value: StackLeaderboardResponse;
+}
+
+function readCachedLeaderboardPage(): StackLeaderboardResponse | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  try {
+    const raw = window.sessionStorage.getItem(LEADERBOARD_PAGE_CACHE_KEY);
+
+    if (!raw) {
+      return null;
+    }
+
+    const cached = JSON.parse(raw) as Partial<CachedLeaderboardPage>;
+
+    if (
+      typeof cached.cached_at !== "number" ||
+      Date.now() - cached.cached_at > LEADERBOARD_PAGE_CACHE_TTL_MS ||
+      !cached.value
+    ) {
+      return null;
+    }
+
+    return cached.value;
+  } catch {
+    return null;
+  }
+}
+
+function writeCachedLeaderboardPage(value: StackLeaderboardResponse) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  try {
+    window.sessionStorage.setItem(
+      LEADERBOARD_PAGE_CACHE_KEY,
+      JSON.stringify({
+        cached_at: Date.now(),
+        value,
+      } satisfies CachedLeaderboardPage),
+    );
+  } catch {
+    // Runtime cache is an optimization only.
+  }
+}
 
 function formatUsdAmount(value: string): string {
   const parsedValue = Number(value);
@@ -65,26 +118,42 @@ export default function LeaderboardRoute() {
   const [leaderboard, setLeaderboard] = createSignal<StackLeaderboardResponse | null>(null);
   const [error, setError] = createSignal<string | null>(null);
 
-  const loadLeaderboard = async () => {
-    setStatus("loading");
+  const loadLeaderboard = async (background = false) => {
+    if (!background) {
+      setStatus("loading");
+    }
+
     setError(null);
 
     try {
       const response = await marketClient.fetchStackLeaderboard();
       setLeaderboard(response);
+      writeCachedLeaderboardPage(response);
       setStatus("ready");
     } catch (caughtError) {
-      setLeaderboard(null);
+      if (!background || !leaderboard()) {
+        setLeaderboard(null);
+        setStatus("error");
+      }
+
       setError(
         caughtError instanceof Error
           ? caughtError.message
           : "Unable to load the stack leaderboard right now.",
       );
-      setStatus("error");
     }
   };
 
   onMount(() => {
+    const cachedLeaderboard = readCachedLeaderboardPage();
+
+    if (cachedLeaderboard) {
+      setLeaderboard(cachedLeaderboard);
+      setStatus("ready");
+      void loadLeaderboard(true);
+      return;
+    }
+
     void loadLeaderboard();
   });
 
@@ -94,7 +163,7 @@ export default function LeaderboardRoute() {
 
   return (
     <div class="pm-page">
-      <Title>{`${t("leaderboard.title")} | Sabimarket`}</Title>
+      <Title>{`${t("leaderboard.title")} | Lattice`}</Title>
       <Navbar />
 
       <main class="pm-detail pm-leaderboard">

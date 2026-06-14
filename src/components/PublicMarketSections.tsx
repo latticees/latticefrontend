@@ -1,4 +1,4 @@
-import { createEffect, createMemo, createSignal, For, onCleanup, Show } from "solid-js";
+import { createEffect, createMemo, createSignal, For, Show } from "solid-js";
 
 import LocaleLink from "~/components/LocaleLink.tsx";
 import StackSidebar from "~/components/stack/StackSidebar.tsx";
@@ -293,35 +293,6 @@ function CompactMarketCard(props: {
     if (props.eagerData) {
       warmEventSnapshot();
     }
-  });
-
-  createEffect(() => {
-    const card = cardRef;
-
-    if (!card || snapshotMarkets() || typeof IntersectionObserver === "undefined") {
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      entries => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            warmEventSnapshot();
-            observer.disconnect();
-            break;
-          }
-        }
-      },
-      {
-        rootMargin: "160px",
-      },
-    );
-
-    observer.observe(card);
-
-    onCleanup(() => {
-      observer.disconnect();
-    });
   });
 
   return (

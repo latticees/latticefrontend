@@ -152,7 +152,7 @@ export type TranslationKey =
 type TranslationDictionary = Record<TranslationKey, MessageValue>;
 
 const en: TranslationDictionary = {
-  "nav.searchPlaceholder": "Search sabimarkets...",
+  "nav.searchPlaceholder": "Search Lattice...",
   "nav.portfolio": "Portfolio",
   "nav.cash": "Cash",
   "nav.deposit": "Deposit",
@@ -191,7 +191,7 @@ const en: TranslationDictionary = {
   "language.title": "Language",
   "language.subtitle": "Choose the interface language.",
   "language.active": "Active",
-  "auth.welcome": "Welcome to Sabimarket",
+  "auth.welcome": "Welcome to Lattice",
   "auth.google": "Continue with Google",
   "auth.connecting": "Connecting...",
   "auth.terms": "Terms",
@@ -312,7 +312,7 @@ const en: TranslationDictionary = {
 };
 
 const es: Partial<TranslationDictionary> = {
-  "nav.searchPlaceholder": "Buscar en Sabimarket...",
+  "nav.searchPlaceholder": "Buscar en Lattice...",
   "nav.portfolio": "Portafolio",
   "nav.cash": "Efectivo",
   "nav.deposit": "Depositar",
@@ -351,7 +351,7 @@ const es: Partial<TranslationDictionary> = {
   "language.title": "Idioma",
   "language.subtitle": "Elige el idioma de la interfaz.",
   "language.active": "Activo",
-  "auth.welcome": "Bienvenido a Sabimarket",
+  "auth.welcome": "Bienvenido a Lattice",
   "auth.google": "Continuar con Google",
   "auth.connecting": "Conectando...",
   "auth.terms": "Términos",
@@ -454,7 +454,7 @@ const es: Partial<TranslationDictionary> = {
 };
 
 const fr: Partial<TranslationDictionary> = {
-  "nav.searchPlaceholder": "Rechercher sur Sabimarket...",
+  "nav.searchPlaceholder": "Rechercher sur Lattice...",
   "nav.portfolio": "Portefeuille",
   "nav.cash": "Cash",
   "nav.deposit": "Déposer",
@@ -493,7 +493,7 @@ const fr: Partial<TranslationDictionary> = {
   "language.title": "Langue",
   "language.subtitle": "Choisissez la langue de l’interface.",
   "language.active": "Actif",
-  "auth.welcome": "Bienvenue sur Sabimarket",
+  "auth.welcome": "Bienvenue sur Lattice",
   "auth.google": "Continuer avec Google",
   "auth.connecting": "Connexion...",
   "auth.terms": "Conditions",
@@ -597,7 +597,7 @@ const fr: Partial<TranslationDictionary> = {
 };
 
 const pt: Partial<TranslationDictionary> = {
-  "nav.searchPlaceholder": "Buscar no Sabimarket...",
+  "nav.searchPlaceholder": "Buscar no Lattice...",
   "nav.portfolio": "Portfólio",
   "nav.cash": "Caixa",
   "nav.deposit": "Depositar",
@@ -636,7 +636,7 @@ const pt: Partial<TranslationDictionary> = {
   "language.title": "Idioma",
   "language.subtitle": "Escolha o idioma da interface.",
   "language.active": "Ativo",
-  "auth.welcome": "Bem-vindo ao Sabimarket",
+  "auth.welcome": "Bem-vindo ao Lattice",
   "auth.google": "Continuar com Google",
   "auth.connecting": "Conectando...",
   "auth.terms": "Termos",
@@ -740,7 +740,7 @@ const pt: Partial<TranslationDictionary> = {
 };
 
 const de: Partial<TranslationDictionary> = {
-  "nav.searchPlaceholder": "Sabimarkets durchsuchen...",
+  "nav.searchPlaceholder": "Lattice durchsuchen...",
   "nav.portfolio": "Portfolio",
   "nav.cash": "Guthaben",
   "nav.deposit": "Einzahlen",
@@ -779,7 +779,7 @@ const de: Partial<TranslationDictionary> = {
   "language.title": "Sprache",
   "language.subtitle": "Wähle die Sprache der Oberfläche.",
   "language.active": "Aktiv",
-  "auth.welcome": "Willkommen bei Sabimarket",
+  "auth.welcome": "Willkommen bei Lattice",
   "auth.google": "Mit Google fortfahren",
   "auth.connecting": "Verbindung wird hergestellt...",
   "auth.terms": "Bedingungen",
@@ -799,7 +799,7 @@ const de: Partial<TranslationDictionary> = {
 };
 
 const ja: Partial<TranslationDictionary> = {
-  "nav.searchPlaceholder": "Sabimarketを検索...",
+  "nav.searchPlaceholder": "Latticeを検索...",
   "nav.portfolio": "ポートフォリオ",
   "nav.cash": "現金",
   "nav.deposit": "入金",
@@ -838,7 +838,7 @@ const ja: Partial<TranslationDictionary> = {
   "language.title": "言語",
   "language.subtitle": "表示言語を選択してください。",
   "language.active": "選択中",
-  "auth.welcome": "Sabimarketへようこそ",
+  "auth.welcome": "Latticeへようこそ",
   "auth.google": "Googleで続ける",
   "auth.connecting": "接続中...",
   "auth.terms": "利用規約",
@@ -858,7 +858,7 @@ const ja: Partial<TranslationDictionary> = {
 };
 
 const zh: Partial<TranslationDictionary> = {
-  "nav.searchPlaceholder": "搜索 Sabimarket...",
+  "nav.searchPlaceholder": "搜索 Lattice...",
   "nav.portfolio": "投资组合",
   "nav.cash": "现金",
   "nav.deposit": "充值",
@@ -897,7 +897,7 @@ const zh: Partial<TranslationDictionary> = {
   "language.title": "语言",
   "language.subtitle": "选择界面语言。",
   "language.active": "已启用",
-  "auth.welcome": "欢迎来到 Sabimarket",
+  "auth.welcome": "欢迎来到 Lattice",
   "auth.google": "使用 Google 继续",
   "auth.connecting": "连接中...",
   "auth.terms": "条款",
@@ -917,7 +917,7 @@ const zh: Partial<TranslationDictionary> = {
 };
 
 const id: Partial<TranslationDictionary> = {
-  "nav.searchPlaceholder": "Cari di Sabimarket...",
+  "nav.searchPlaceholder": "Cari di Lattice...",
   "nav.portfolio": "Portofolio",
   "nav.cash": "Kas",
   "nav.deposit": "Deposit",
@@ -956,7 +956,7 @@ const id: Partial<TranslationDictionary> = {
   "language.title": "Bahasa",
   "language.subtitle": "Pilih bahasa antarmuka.",
   "language.active": "Aktif",
-  "auth.welcome": "Selamat datang di Sabimarket",
+  "auth.welcome": "Selamat datang di Lattice",
   "auth.google": "Lanjutkan dengan Google",
   "auth.connecting": "Menghubungkan...",
   "auth.terms": "Ketentuan",
@@ -976,7 +976,7 @@ const id: Partial<TranslationDictionary> = {
 };
 
 const bn: Partial<TranslationDictionary> = {
-  "nav.searchPlaceholder": "Sabimarket-এ খুঁজুন...",
+  "nav.searchPlaceholder": "Lattice-এ খুঁজুন...",
   "nav.portfolio": "পোর্টফোলিও",
   "nav.cash": "ক্যাশ",
   "nav.deposit": "জমা",
@@ -1015,7 +1015,7 @@ const bn: Partial<TranslationDictionary> = {
   "language.title": "ভাষা",
   "language.subtitle": "ইন্টারফেসের ভাষা নির্বাচন করুন।",
   "language.active": "সক্রিয়",
-  "auth.welcome": "Sabimarket-এ স্বাগতম",
+  "auth.welcome": "Lattice-এ স্বাগতম",
   "auth.google": "Google দিয়ে চালিয়ে যান",
   "auth.connecting": "সংযোগ করা হচ্ছে...",
   "auth.terms": "শর্তাবলি",

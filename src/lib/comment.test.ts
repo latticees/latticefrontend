@@ -11,9 +11,7 @@ interface FetchCall {
 }
 
 const sampleMarketId = "550e8400-e29b-41d4-a716-446655440000";
-const sampleEventId = "660e8400-e29b-41d4-a716-446655440000";
 const sampleUserId = "770e8400-e29b-41d4-a716-446655440000";
-const sampleConditionId = "0x0000000000000000000000000000000000000000000000000000000000000001";
 const sampleCommentId = "880e8400-e29b-41d4-a716-446655440000";
 const sampleReplyId = "990e8400-e29b-41d4-a716-446655440000";
 
@@ -27,58 +25,6 @@ function jsonResponse(body: unknown, status = 200): Response {
       "Content-Type": "application/json",
     },
   });
-}
-
-function sampleEventResponse() {
-  return {
-    title: "Will BTC hit $100k?",
-    slug: "will-btc-hit-100k",
-    category_slug: "crypto",
-    subcategory_slug: "bitcoin",
-    tag_slugs: ["btc", "price"],
-    image_url: "https://example.com/btc.png",
-    summary: "Bitcoin price target market",
-    rules: "Resolves YES if BTC trades at or above $100k.",
-    context: "Cash market reference",
-    additional_context: null,
-    resolution_sources: ["Coinbase"],
-    resolution_timezone: "UTC",
-    starts_at: "2026-04-01T00:00:00Z",
-    sort_at: "2026-04-01T00:00:00Z",
-    featured: true,
-    breaking: false,
-    searchable: true,
-    visible: true,
-    hide_resolved_by_default: false,
-    publication_status: "published",
-  };
-}
-
-function sampleOnChainResponse() {
-  return {
-    event_id: sampleEventId,
-    group_id: "0xgroup",
-    series_id: "0xseries",
-    neg_risk: false,
-    tx_hash: "0xtxhash",
-  };
-}
-
-function sampleMarketResponse() {
-  return {
-    id: sampleMarketId,
-    slug: "btc-100k",
-    label: "BTC 100k",
-    question: "Will BTC hit $100k by year end?",
-    question_id: "0xquestion",
-    condition_id: sampleConditionId,
-    market_type: "binary",
-    outcomes: ["Yes", "No"],
-    end_time: "2026-12-31T23:59:59Z",
-    sort_order: 1,
-    publication_status: "published",
-    trading_status: "active",
-  };
 }
 
 function sampleCommentResponse() {
@@ -141,16 +87,12 @@ test("fetchMarketComments sends GET /markets/{market_id}/comments", async () => 
     calls.push({ input, init });
 
     return jsonResponse({
-      event: sampleEventResponse(),
-      on_chain: sampleOnChainResponse(),
-      market: sampleMarketResponse(),
       comments: [sampleCommentResponse()],
     });
   }) as typeof fetch;
 
   const response = await client.fetchMarketComments(sampleMarketId);
 
-  assert.equal(response.market.id, sampleMarketId);
   assert.equal(response.comments[0]?.author.username, "sabi");
   assert.equal(response.comments[0]?.like_count, 3);
   assert.equal(response.comments[0]?.replies[0]?.parent_comment_id, sampleCommentId);
@@ -171,9 +113,6 @@ test("createMarketComment posts an authenticated payload to /markets/{market_id}
     calls.push({ input, init });
 
     return jsonResponse({
-      event: sampleEventResponse(),
-      on_chain: sampleOnChainResponse(),
-      market: sampleMarketResponse(),
       comment: sampleCommentResponse(),
     });
   }) as typeof fetch;
@@ -212,9 +151,6 @@ test("createMarketCommentReply posts an authenticated payload to /markets/{marke
     calls.push({ input, init });
 
     return jsonResponse({
-      event: sampleEventResponse(),
-      on_chain: sampleOnChainResponse(),
-      market: sampleMarketResponse(),
       comment: {
         ...sampleCommentResponse().replies[0],
       },

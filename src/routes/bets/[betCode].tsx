@@ -97,13 +97,13 @@ export default function StackBetShareRoute() {
   });
   const shareSummary = createMemo(() => {
     const snapshot = shareSnapshot();
-    return snapshot ? buildStackShareSummary(snapshot) : "Open this Sabimarket structured stack.";
+    return snapshot ? buildStackShareSummary(snapshot) : "Open this Lattice structured stack.";
   });
   const shareDescription = createMemo(() => {
     const snapshot = shareSnapshot();
 
     if (!snapshot) {
-      return "Open this Sabimarket structured stack.";
+      return "Open this Lattice structured stack.";
     }
 
     return buildStackShareDescription(snapshot);
@@ -143,7 +143,7 @@ export default function StackBetShareRoute() {
   return (
     <div class="pm-page">
       <Title>
-        {stackBet() ? `${formatBetCodeDisplay(stackBet()!.bet_code)} | Sabimarket` : "Stack | Sabimarket"}
+        {stackBet() ? `${formatBetCodeDisplay(stackBet()!.bet_code)} | Lattice` : "Stack | Lattice"}
       </Title>
       <Meta property="og:type" content="website" />
       <Meta property="og:title" content={shareSummary()} />

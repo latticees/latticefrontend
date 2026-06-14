@@ -12,7 +12,7 @@ export default function DocsDetailRoute() {
 
   return (
     <div class="pm-page pm-docs-page">
-      <Title>{`${page()?.label ?? "Docs"} | Sabimarket`}</Title>
+      <Title>{`${page()?.label ?? "Docs"} | Lattice`}</Title>
       <Navbar />
 
       {page() ? (

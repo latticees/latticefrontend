@@ -499,6 +499,75 @@ export interface StackRoomDetailResponse {
   recent_stacks: StackRoomRecentStackResponse[];
 }
 
+export interface CreateStackRoomPostRequest {
+  kind?: string;
+  body: string;
+  bet_code?: string;
+}
+
+export interface StackRoomPresenceUserResponse {
+  user_id: string;
+  display_name: string;
+  username: string | null;
+  avatar_url: string | null;
+}
+
+export interface StackRoomAttachedBetResponse {
+  bet_code: string;
+  status: string;
+  stake: string;
+  total_return: string;
+  capital_multiple: string;
+  leg_count: number;
+  headline: string;
+}
+
+export interface StackRoomReactionCountResponse {
+  reaction: string;
+  count: number;
+}
+
+export interface StackRoomPostResponse {
+  id: string;
+  room_slug: string;
+  kind: string;
+  body: string;
+  bet_code: string | null;
+  created_at: IsoDateTimeString;
+  updated_at: IsoDateTimeString;
+  author: StackRoomPresenceUserResponse;
+  attached_bet: StackRoomAttachedBetResponse | null;
+  reaction_counts: StackRoomReactionCountResponse[];
+  viewer_reactions: string[];
+}
+
+export interface StackRoomFeedResponse {
+  generated_at: IsoDateTimeString;
+  room_slug: string;
+  active_user_count: number;
+  active_users: StackRoomPresenceUserResponse[];
+  posts: StackRoomPostResponse[];
+}
+
+export interface StackRoomPostWriteResponse {
+  room_slug: string;
+  post: StackRoomPostResponse;
+}
+
+export interface StackRoomReactionWriteResponse {
+  room_slug: string;
+  post_id: string;
+  reaction: string;
+  active: boolean;
+  counts: StackRoomReactionCountResponse[];
+}
+
+export interface StackRoomPresenceResponse {
+  room_slug: string;
+  active_user_count: number;
+  active_users: StackRoomPresenceUserResponse[];
+}
+
 export interface PreparedWalletCallResponse {
   kind: string;
   target: string;

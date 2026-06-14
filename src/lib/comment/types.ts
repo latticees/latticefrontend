@@ -1,10 +1,4 @@
-import type {
-  EventOnChainResponse,
-  EventResponse,
-  IsoDateTimeString,
-  MarketResponse,
-  Uuid,
-} from "../market/types.ts";
+import type { IsoDateTimeString, Uuid } from "../market/types.ts";
 
 export interface CommentClientOptions {
   baseUrl?: string;
@@ -38,22 +32,16 @@ export interface MarketCommentResponse {
 }
 
 export interface MarketCommentsResponse {
-  event: EventResponse;
-  on_chain: EventOnChainResponse;
-  market: MarketResponse;
   comments: MarketCommentResponse[];
 }
 
 export interface MarketCommentWriteResponse {
-  event: EventResponse;
-  on_chain: EventOnChainResponse;
-  market: MarketResponse;
   comment: MarketCommentResponse;
 }
 
 export interface MarketCommentLikeResponse {
   comment_id: Uuid;
-  market_id: Uuid;
+  market_id: string;
   like_count: number;
   liked: boolean;
   updated_at: IsoDateTimeString;

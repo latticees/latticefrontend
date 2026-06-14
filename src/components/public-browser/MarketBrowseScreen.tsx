@@ -16,6 +16,7 @@ import PublicMarketSections from "~/components/PublicMarketSections";
 type ScreenStatus = "loading" | "ready" | "error";
 const FEED_PAGE_LIMIT = 24;
 const HOME_FEED_STORAGE_KEY = "pm-home-feed/v7";
+let memoryHomeFeedState: HomeFeedState | null = null;
 
 interface HomeFeedState {
   events: PublicEventCardResponse[];
@@ -30,8 +31,10 @@ interface MarketBrowseScreenProps {
   label?: string;
 }
 
+type ResolvedFeedKind = "all" | Exclude<MarketFeedKind, "search">;
+
 interface ResolvedFeedRequest {
-  kind: Exclude<MarketFeedKind, "search">;
+  kind: ResolvedFeedKind;
   label: string;
   title: string;
   heading: string;
@@ -73,13 +76,53 @@ function isHomeFeedState(value: unknown): value is HomeFeedState {
 }
 
 function readCachedHomeFeed(): HomeFeedState | null {
+  if (memoryHomeFeedState && memoryHomeFeedState.events.length > 0) {
+    return memoryHomeFeedState;
+  }
+
   const current = readStoredJson<unknown>(HOME_FEED_STORAGE_KEY);
 
   if (isHomeFeedState(current)) {
+    memoryHomeFeedState = current;
     return current;
   }
 
   return null;
+}
+
+function writeCachedHomeFeed(state: HomeFeedState) {
+  memoryHomeFeedState = state;
+
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  try {
+    window.sessionStorage.setItem(HOME_FEED_STORAGE_KEY, JSON.stringify(state));
+  } catch {
+    // Keep the in-memory cache even when sessionStorage is unavailable.
+  }
+}
+
+function mergeEventPages(
+  existingEvents: readonly PublicEventCardResponse[],
+  incomingEvents: readonly PublicEventCardResponse[],
+): PublicEventCardResponse[] {
+  const seen = new Set<string>();
+  const mergedEvents: PublicEventCardResponse[] = [];
+
+  for (const event of [...existingEvents, ...incomingEvents]) {
+    const key = event.id || event.slug;
+
+    if (seen.has(key)) {
+      continue;
+    }
+
+    seen.add(key);
+    mergedEvents.push(event);
+  }
+
+  return mergedEvents;
 }
 
 function matchesCachedEvent(
@@ -87,6 +130,8 @@ function matchesCachedEvent(
   request: ResolvedFeedRequest,
 ): boolean {
   switch (request.kind) {
+    case "all":
+      return true;
     case "featured":
       return event.featured;
     case "breaking":
@@ -110,6 +155,16 @@ function resolveFeedRequest(props: MarketBrowseScreenProps): ResolvedFeedRequest
   const label = normalizeOptionalValue(props.label);
   const categorySlug = normalizeOptionalValue(props.category);
   const tagSlug = normalizeOptionalValue(props.tag);
+
+  if (!feed && !categorySlug && !tagSlug) {
+    return {
+      kind: "all",
+      label: label ?? "All markets",
+      title: "All Markets",
+      heading: "All markets",
+      summary: "All published market events.",
+    };
+  }
 
   if (feed === "breaking") {
     return {
@@ -167,6 +222,10 @@ export default function MarketBrowseScreen(props: MarketBrowseScreenProps) {
   const [error, setError] = createSignal<string | null>(null);
   const [eventData, setEventData] = createSignal<EventListResponse | null>(null);
   const [homeData, setHomeData] = createSignal<MarketsHomeResponse | null>(null);
+  const [nextOffset, setNextOffset] = createSignal(0);
+  const [hasMore, setHasMore] = createSignal(false);
+  const [loadingMore, setLoadingMore] = createSignal(false);
+  const [loadMoreError, setLoadMoreError] = createSignal<string | null>(null);
   let requestVersion = 0;
 
   const request = createMemo(() => resolveFeedRequest(props));
@@ -207,6 +266,9 @@ export default function MarketBrowseScreen(props: MarketBrowseScreenProps) {
       offset: 0,
     });
     setHomeData(null);
+    setNextOffset(currentRequest.kind === "all" ? cachedFeed.nextOffset : filteredEvents.length);
+    setHasMore(currentRequest.kind === "all" ? cachedFeed.hasMore : false);
+    setLoadMoreError(null);
     setStatus("ready");
     setError(null);
     return true;
@@ -234,6 +296,9 @@ export default function MarketBrowseScreen(props: MarketBrowseScreenProps) {
 
         setHomeData(response);
         setEventData(null);
+        setNextOffset(0);
+        setHasMore(false);
+        setLoadMoreError(null);
       } else {
         const response = await marketClient.listHomeEvents({
           limit: FEED_PAGE_LIMIT,
@@ -247,8 +312,38 @@ export default function MarketBrowseScreen(props: MarketBrowseScreenProps) {
           return;
         }
 
-        setEventData(response);
+        const responseNextOffset = response.offset + response.events.length;
+        const responseHasMore = response.events.length >= FEED_PAGE_LIMIT;
+        const existingEvents = background && currentRequest.kind === "all"
+          ? eventData()?.events ?? []
+          : [];
+        const nextEvents = existingEvents.length > response.events.length
+          ? mergeEventPages(response.events, existingEvents)
+          : response.events;
+        const nextFeedOffset = existingEvents.length > response.events.length
+          ? Math.max(nextOffset(), responseNextOffset)
+          : responseNextOffset;
+        const nextFeedHasMore = existingEvents.length > response.events.length
+          ? hasMore() || responseHasMore
+          : responseHasMore;
+
+        setEventData({
+          events: nextEvents,
+          limit: nextEvents.length,
+          offset: 0,
+        });
         setHomeData(null);
+        setNextOffset(nextFeedOffset);
+        setHasMore(nextFeedHasMore);
+        setLoadMoreError(null);
+
+        if (currentRequest.kind === "all") {
+          writeCachedHomeFeed({
+            events: nextEvents,
+            nextOffset: nextFeedOffset,
+            hasMore: nextFeedHasMore,
+          });
+        }
       }
 
       setStatus("ready");
@@ -264,8 +359,74 @@ export default function MarketBrowseScreen(props: MarketBrowseScreenProps) {
 
       setEventData(null);
       setHomeData(null);
+      setNextOffset(0);
+      setHasMore(false);
       setError(caughtError instanceof Error ? caughtError.message : "Unable to load this market feed.");
       setStatus("error");
+    }
+  };
+
+  const loadMore = async () => {
+    const currentRequest = request();
+
+    if (currentRequest.kind === "new" || loadingMore() || !hasMore()) {
+      return;
+    }
+
+    const currentEvents = eventData()?.events ?? [];
+    const offset = nextOffset();
+    const version = ++requestVersion;
+    setLoadingMore(true);
+    setLoadMoreError(null);
+
+    try {
+      const response = await marketClient.listHomeEvents({
+        limit: FEED_PAGE_LIMIT,
+        offset,
+        featured: currentRequest.kind === "featured" ? true : undefined,
+        breaking: currentRequest.kind === "breaking" ? true : undefined,
+        category_slug: currentRequest.kind === "category" ? currentRequest.categorySlug : undefined,
+        tag_slug: currentRequest.kind === "tag" ? currentRequest.tagSlug : undefined,
+      });
+
+      if (version !== requestVersion) {
+        return;
+      }
+
+      const mergedEvents = mergeEventPages(currentEvents, response.events);
+      const responseNextOffset = offset + response.events.length;
+      const responseHasMore = response.events.length >= FEED_PAGE_LIMIT;
+
+      setEventData({
+        events: mergedEvents,
+        limit: mergedEvents.length,
+        offset: 0,
+      });
+      setHomeData(null);
+      setNextOffset(responseNextOffset);
+      setHasMore(responseHasMore);
+
+      if (currentRequest.kind === "all") {
+        writeCachedHomeFeed({
+          events: mergedEvents,
+          nextOffset: responseNextOffset,
+          hasMore: responseHasMore,
+        });
+      }
+    } catch (caughtError) {
+      if (version !== requestVersion) {
+        return;
+      }
+
+      setLoadMoreError(
+        caughtError instanceof Error
+          ? caughtError.message
+          : "Unable to load more markets right now.",
+      );
+    } finally {
+      if (version === requestVersion) {
+        setLoadingMore(false);
+      }
     }
   };
 
@@ -276,8 +437,12 @@ export default function MarketBrowseScreen(props: MarketBrowseScreenProps) {
     if (!seededFromCache) {
       setEventData(null);
       setHomeData(null);
+      setNextOffset(0);
+      setHasMore(false);
     }
 
+    setLoadingMore(false);
+    setLoadMoreError(null);
     void loadFeed(seededFromCache);
   });
 
@@ -303,6 +468,12 @@ export default function MarketBrowseScreen(props: MarketBrowseScreenProps) {
             title={request().label}
             loading={status() === "loading"}
             error={status() === "error" ? error() : null}
+            canLoadMore={request().kind !== "new" && hasMore()}
+            loadingMore={loadingMore()}
+            loadMoreError={loadMoreError()}
+            onLoadMore={() => {
+              void loadMore();
+            }}
             onRetry={() => {
               void loadFeed();
             }}

@@ -92,7 +92,7 @@ export default function RoomsIndexRoute() {
 
   return (
     <div class="pm-page">
-      <Title>{`${t("rooms.title")} | Sabimarket`}</Title>
+      <Title>{`${t("rooms.title")} | Lattice`}</Title>
       <Navbar />
 
       <main class="pm-detail pm-rooms">

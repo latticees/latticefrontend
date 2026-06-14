@@ -258,7 +258,7 @@ export default function DepositModal(props: DepositModalProps) {
                     Transfer Crypto
                   </h2>
                   <p class="pm-deposit-modal__subtitle">
-                    Sabimarket Balance: {balanceLabel()}
+                    Lattice Balance: {balanceLabel()}
                   </p>
                 </div>
 
@@ -302,7 +302,7 @@ export default function DepositModal(props: DepositModalProps) {
                       </label>
                       <div class="pm-deposit-transfer__hint">
                         Enter how much USDC you want. The request is sent directly to
-                        your linked Sabimarket wallet.
+                        your linked Lattice wallet.
                       </div>
                     </div>
                   </div>
@@ -339,7 +339,7 @@ export default function DepositModal(props: DepositModalProps) {
                     <div>
                       <div class="pm-deposit-transfer__label">Recipient wallet</div>
                       <div class="pm-deposit-transfer__hint">
-                        Faucet USDC is sent to the wallet linked to your Sabimarket
+                        Faucet USDC is sent to the wallet linked to your Lattice
                         account.
                       </div>
                     </div>

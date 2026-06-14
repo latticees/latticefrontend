@@ -27,11 +27,16 @@ export interface EventMarketTabItem {
 export interface EventMarketListItem {
   id: string;
   slug: string;
+  eventSlug: string;
   label: string;
+  question: string;
   meta: string;
   href: string;
   primaryMetric: string;
   isSelected: boolean;
+  outcomes: string[];
+  yesBps: number | null;
+  noBps: number | null;
   quotes: OutcomeQuote[];
   pill: EventMarketTabItem;
 }

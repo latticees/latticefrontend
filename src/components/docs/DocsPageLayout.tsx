@@ -120,7 +120,7 @@ export default function DocsPageLayout(props: { page: DocsPage }) {
     <main class="pm-docs">
       <aside class="pm-docs__sidebar">
         <div class="pm-docs__sidebar-card">
-          <p class="pm-docs__sidebar-brand">Sabimarket Docs</p>
+          <p class="pm-docs__sidebar-brand">Lattice Docs</p>
           <For each={DOCS_GROUPS}>
             {group => (
               <section class="pm-docs__sidebar-group">

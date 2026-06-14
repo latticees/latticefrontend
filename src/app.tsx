@@ -1,14 +1,12 @@
 import { MetaProvider, Title } from "@solidjs/meta";
-import { Navigate, Router, useLocation } from "@solidjs/router";
+import { Router, useLocation } from "@solidjs/router";
 import { FileRoutes } from "@solidjs/start/router";
 import { Suspense } from "solid-js";
 import { getRequestEvent } from "solid-js/web";
 
 import { I18nProvider } from "./lib/i18n/context.tsx";
 import {
-  buildLocaleRedirectPath,
   extractLocaleFromPathname,
-  isTechnicalUnlocalizedPath,
   resolveClientPreferredLocale,
   resolveServerPreferredLocale,
   stripLocalePrefix,
@@ -34,16 +32,6 @@ function AppRoot(props: { children: any }) {
   const location = useLocation();
   const localeFromPath = extractLocaleFromPathname(location.pathname);
 
-  if (!localeFromPath && !isTechnicalUnlocalizedPath(location.pathname)) {
-    const nextLocale = resolvePreferredLocaleForRequest(location.pathname);
-
-    return (
-      <Navigate
-        href={buildLocaleRedirectPath(location.pathname, location.search, location.hash, nextLocale)}
-      />
-    );
-  }
-
   const activeLocale = localeFromPath ?? resolvePreferredLocaleForRequest(location.pathname);
 
   if (typeof document !== "undefined") {
@@ -58,7 +46,7 @@ export default function App() {
     <Router
       root={props => (
         <MetaProvider>
-          <Title>Sabimarket</Title>
+          <Title>Lattice</Title>
           <Suspense>
             <AppRoot>{props.children}</AppRoot>
           </Suspense>

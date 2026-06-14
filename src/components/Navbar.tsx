@@ -1336,11 +1336,11 @@ export default function Navbar() {
 
           <div class="pm-navbar__top-row">
             <div class="pm-navbar__brand-wrap">
-              <LocaleLink class="pm-brand" aria-label="Sabimarket Logo" href="/">
+              <LocaleLink class="pm-brand" aria-label="Lattice Logo" href="/">
                 <span class="pm-brand__badge">
                   <img src="/c7xdtwf0cz6mneysxo8.svg" alt="" aria-hidden="true" />
                 </span>
-                <span class="pm-brand__name">Sabimarket</span>
+                <span class="pm-brand__name">Lattice</span>
               </LocaleLink>
             </div>
 

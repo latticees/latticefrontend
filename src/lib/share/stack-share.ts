@@ -59,7 +59,7 @@ export function buildStackShareSnapshot(bet: StackBetResponse): StackShareSnapsh
 
 export function buildStackShareSummary(snapshot: StackShareSnapshot): string {
   return [
-    `${snapshot.legCount}-leg Sabimarket stack`,
+    `${snapshot.legCount}-leg Lattice stack`,
     `${snapshot.capitalMultiple} potential`,
     `${snapshot.stake} stake`,
     `${snapshot.totalReturn} return`,

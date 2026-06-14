@@ -362,6 +362,20 @@ function buildMarketListItem(
   selectedMarketSlug: string,
 ): EventMarketListItem {
   const label = resolveMarketLabel(market.label, market.question, market.end_time);
+  const yesBps =
+    typeof market.quote_summary?.buy_yes_bps === "number"
+      ? market.quote_summary.buy_yes_bps
+      : typeof market.current_prices?.yes_bps === "number"
+        ? market.current_prices.yes_bps
+        : null;
+  const noBps =
+    typeof market.quote_summary?.buy_no_bps === "number"
+      ? market.quote_summary.buy_no_bps
+      : typeof market.current_prices?.no_bps === "number"
+        ? market.current_prices.no_bps
+        : yesBps !== null
+          ? Math.max(0, 10000 - yesBps)
+          : null;
   const quotes = buildOutcomeQuotes(
     market,
     orderbook,
@@ -381,11 +395,16 @@ function buildMarketListItem(
   return {
     id: market.id,
     slug: market.slug,
+    eventSlug,
     label,
+    question: market.question,
     meta: volumeLabel ? `${volumeLabel} · ${endLabel}` : endLabel,
     href,
     primaryMetric,
     isSelected: market.slug === selectedMarketSlug,
+    outcomes: market.outcomes,
+    yesBps,
+    noBps,
     quotes,
     pill: {
       label: resolveMarketPillLabel(market.label, market.end_time),
@@ -774,10 +793,6 @@ async function loadCommentsForMarket(
       if (!response) {
         return null;
       }
-
-      eventView.event = response.event;
-      eventView.eventId = response.on_chain.event_id;
-      eventView.sortedMarkets = mergeMarketSnapshots(eventView.sortedMarkets, [response.market]);
 
       const comments = sortCommentsByNewest(response.comments);
       eventView.commentsByMarketId.set(marketId, comments);

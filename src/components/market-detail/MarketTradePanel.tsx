@@ -21,6 +21,8 @@ interface MarketTradePanelProps {
   question: string;
   selectedOutcomeIndex: number;
   onSelectOutcome: (outcomeIndex: number) => void;
+  isStackSelected?: boolean;
+  onToggleStackOutcome?: (outcomeIndex: number) => void;
 }
 
 const quickAmounts = ["1", "5", "10", "100"];
@@ -253,6 +255,21 @@ export default function MarketTradePanel(props: MarketTradePanelProps) {
           )}
         </For>
       </div>
+
+      <Show when={props.onToggleStackOutcome}>
+        <button
+          type="button"
+          classList={{
+            "pm-trade-panel__stack-button": true,
+            "pm-trade-panel__stack-button--active": props.isStackSelected === true,
+          }}
+          onClick={() => props.onToggleStackOutcome?.(props.selectedOutcomeIndex)}
+        >
+          {props.isStackSelected === true
+            ? "Remove from stack"
+            : `Add ${selectedQuote()?.label ?? "leg"} to stack`}
+        </button>
+      </Show>
 
       <label class="pm-trade-panel__amount">
         <span class="pm-trade-panel__amount-label">

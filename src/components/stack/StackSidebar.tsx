@@ -553,7 +553,7 @@ export default function StackSidebar(props: StackSidebarProps) {
     }
 
     return [
-      `${props.legs.length}-leg Sabimarket stack booked`,
+      `${props.legs.length}-leg Lattice stack booked`,
       `${displayedCapitalMultiple() ?? "--"} potential`,
       `${stakeDisplay()} stake`,
       `${displayedTotalReturn() ?? "Return pending"} return`,
@@ -700,7 +700,7 @@ export default function StackSidebar(props: StackSidebarProps) {
     const objectUrl = window.URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = objectUrl;
-    link.download = `sabimarket-stack-${(code ?? "share-card").toLowerCase()}.png`;
+    link.download = `lattice-stack-${(code ?? "share-card").toLowerCase()}.png`;
     link.click();
     window.URL.revokeObjectURL(objectUrl);
     setShareFeedback("Share card downloaded.");
@@ -718,19 +718,19 @@ export default function StackSidebar(props: StackSidebarProps) {
       const code = shareCardInput()?.betCode?.toUpperCase() ?? "stack";
       const file =
         blob && typeof File !== "undefined"
-          ? new File([blob], `sabimarket-stack-${code.toLowerCase()}.png`, { type: "image/png" })
+          ? new File([blob], `lattice-stack-${code.toLowerCase()}.png`, { type: "image/png" })
           : null;
       const sharePayload =
         file &&
         (typeof navigator.canShare !== "function" || navigator.canShare({ files: [file] }))
           ? {
-              title: "Sabimarket bet code",
+              title: "Lattice bet code",
               text: shareText(),
               url: shareUrl() || undefined,
               files: [file],
             }
           : {
-              title: "Sabimarket bet code",
+              title: "Lattice bet code",
               text: shareText(),
               url: shareUrl() || undefined,
             };

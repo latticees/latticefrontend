@@ -34,6 +34,63 @@ type EarnPageStatus = "loading" | "ready" | "error" | "unauthenticated";
 type EarnRange = "1D" | "1W" | "1M" | "3M" | "1Y" | "ALL";
 type VaultActionMode = "deposit" | "withdraw";
 type ActionTone = "success" | "error";
+const EARN_PAGE_CACHE_PREFIX = "lattice-earn-page/v1:";
+const EARN_PAGE_CACHE_TTL_MS = 30_000;
+
+interface CachedEarnPage {
+  cached_at: number;
+  value: MyEarnResponse;
+}
+
+function earnPageCacheKey(session: StoredAuthSession): string {
+  return `${EARN_PAGE_CACHE_PREFIX}${session.user.id}`;
+}
+
+function readCachedEarnPage(session: StoredAuthSession): MyEarnResponse | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  try {
+    const raw = window.sessionStorage.getItem(earnPageCacheKey(session));
+
+    if (!raw) {
+      return null;
+    }
+
+    const cached = JSON.parse(raw) as Partial<CachedEarnPage>;
+
+    if (
+      typeof cached.cached_at !== "number" ||
+      Date.now() - cached.cached_at > EARN_PAGE_CACHE_TTL_MS ||
+      !cached.value
+    ) {
+      return null;
+    }
+
+    return cached.value;
+  } catch {
+    return null;
+  }
+}
+
+function writeCachedEarnPage(session: StoredAuthSession, value: MyEarnResponse) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  try {
+    window.sessionStorage.setItem(
+      earnPageCacheKey(session),
+      JSON.stringify({
+        cached_at: Date.now(),
+        value,
+      } satisfies CachedEarnPage),
+    );
+  } catch {
+    // Runtime cache is an optimization only.
+  }
+}
 
 function formatUsdAmount(value: number | string): string {
   const parsedValue = typeof value === "number" ? value : Number(value);
@@ -507,7 +564,11 @@ export default function EarnRoute() {
     });
   });
 
-  const loadEarn = async (token: string, requestId: number) => {
+  const loadEarn = async (
+    token: string,
+    requestId: number,
+    activeSession: StoredAuthSession,
+  ) => {
     const response = await orderClient.fetchMyEarn(token);
 
     if (requestId !== earnRequestVersion) {
@@ -515,6 +576,7 @@ export default function EarnRoute() {
     }
 
     setEarn(response);
+    writeCachedEarnPage(activeSession, response);
     setStatus("ready");
   };
 
@@ -524,9 +586,10 @@ export default function EarnRoute() {
       return;
     }
 
-    const token = session()?.token?.trim() ?? "";
+    const activeSession = session();
+    const token = activeSession?.token?.trim() ?? "";
 
-    if (token.length === 0) {
+    if (!activeSession || token.length === 0) {
       setEarn(null);
       setError(null);
       setStatus("unauthenticated");
@@ -534,17 +597,28 @@ export default function EarnRoute() {
     }
 
     const requestId = ++earnRequestVersion;
-    setStatus("loading");
+    const cachedEarn = readCachedEarnPage(activeSession);
+
+    if (cachedEarn) {
+      setEarn(cachedEarn);
+      setStatus("ready");
+    } else {
+      setStatus("loading");
+    }
+
     setError(null);
 
-    void loadEarn(token, requestId).catch(caughtError => {
+    void loadEarn(token, requestId, activeSession).catch(caughtError => {
       if (requestId !== earnRequestVersion) {
         return;
       }
 
-      setEarn(null);
+      if (!cachedEarn) {
+        setEarn(null);
+        setStatus("error");
+      }
+
       setError(caughtError instanceof Error ? caughtError.message : "Unable to load earn data.");
-      setStatus("error");
     });
   });
 
@@ -628,15 +702,16 @@ export default function EarnRoute() {
   };
 
   const refreshEarnAndBalances = async () => {
-    const token = session()?.token?.trim() ?? "";
+    const activeSession = session();
+    const token = activeSession?.token?.trim() ?? "";
 
-    if (token.length === 0) {
+    if (!activeSession || token.length === 0) {
       return;
     }
 
     const requestId = ++earnRequestVersion;
     setStatus("loading");
-    await loadEarn(token, requestId);
+    await loadEarn(token, requestId, activeSession);
     requestNavbarBalanceRefresh();
   };
 
@@ -841,7 +916,7 @@ export default function EarnRoute() {
 
   return (
     <div class="pm-page">
-      <Title>{`${t("earn.title")} | Sabimarket`}</Title>
+      <Title>{`${t("earn.title")} | Lattice`}</Title>
       <Navbar />
 
       <main class="pm-detail pm-earn">

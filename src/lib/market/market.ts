@@ -9,6 +9,7 @@ import type {
   CategoriesResponse,
   CategoryDetailResponse,
   CreateStackQuoteRequest,
+  CreateStackRoomPostRequest,
   ExplainStackAiRequest,
   ExecuteStackRequest,
   ExecuteStackResponse,
@@ -48,6 +49,10 @@ import type {
   StackCompositeCatalogResponse,
   StackRoomCatalogResponse,
   StackRoomDetailResponse,
+  StackRoomFeedResponse,
+  StackRoomPostWriteResponse,
+  StackRoomPresenceResponse,
+  StackRoomReactionWriteResponse,
   StackLeaderboardResponse,
   SuggestStackAiRequest,
   StackQuoteEnvelopeResponse,
@@ -183,6 +188,28 @@ export interface MarketClient {
   fetchStackComposites(): Promise<StackCompositeCatalogResponse>;
   fetchStackRooms(): Promise<StackRoomCatalogResponse>;
   fetchStackRoom(roomSlug: string): Promise<StackRoomDetailResponse>;
+  fetchStackRoomFeed(roomSlug: string, token?: string): Promise<StackRoomFeedResponse>;
+  createStackRoomPost(
+    token: string,
+    roomSlug: string,
+    payload: CreateStackRoomPostRequest,
+  ): Promise<StackRoomPostWriteResponse>;
+  addStackRoomReaction(
+    token: string,
+    roomSlug: string,
+    postId: string,
+    reaction: string,
+  ): Promise<StackRoomReactionWriteResponse>;
+  removeStackRoomReaction(
+    token: string,
+    roomSlug: string,
+    postId: string,
+    reaction: string,
+  ): Promise<StackRoomReactionWriteResponse>;
+  heartbeatStackRoomPresence(
+    token: string,
+    roomSlug: string,
+  ): Promise<StackRoomPresenceResponse>;
   createStackQuote(payload: CreateStackQuoteRequest): Promise<StackQuoteEnvelopeResponse>;
   fetchStackQuote(quoteId: string): Promise<StackQuoteEnvelopeResponse>;
   fetchStackBet(betCode: string): Promise<StackBetResponse>;
@@ -1513,6 +1540,73 @@ export function createMarketClient(options: MarketClientOptions = {}): MarketCli
       return requestJson<StackRoomDetailResponse>(
         baseUrl,
         `/stacks/rooms/${encodePathSegment(roomSlug)}`,
+      );
+    },
+
+    fetchStackRoomFeed(roomSlug, token) {
+      return requestJson<StackRoomFeedResponse>(
+        baseUrl,
+        `/stacks/rooms/${encodePathSegment(roomSlug)}/feed`,
+        token
+          ? {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          : undefined,
+      );
+    },
+
+    createStackRoomPost(token, roomSlug, payload) {
+      return requestJson<StackRoomPostWriteResponse>(
+        baseUrl,
+        `/stacks/rooms/${encodePathSegment(roomSlug)}/posts`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          json: payload,
+        },
+      );
+    },
+
+    addStackRoomReaction(token, roomSlug, postId, reaction) {
+      return requestJson<StackRoomReactionWriteResponse>(
+        baseUrl,
+        `/stacks/rooms/${encodePathSegment(roomSlug)}/posts/${encodePathSegment(postId)}/reactions/${encodePathSegment(reaction)}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+    },
+
+    removeStackRoomReaction(token, roomSlug, postId, reaction) {
+      return requestJson<StackRoomReactionWriteResponse>(
+        baseUrl,
+        `/stacks/rooms/${encodePathSegment(roomSlug)}/posts/${encodePathSegment(postId)}/reactions/${encodePathSegment(reaction)}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+    },
+
+    heartbeatStackRoomPresence(token, roomSlug) {
+      return requestJson<StackRoomPresenceResponse>(
+        baseUrl,
+        `/stacks/rooms/${encodePathSegment(roomSlug)}/presence`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
       );
     },
 

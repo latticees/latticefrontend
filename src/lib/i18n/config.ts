@@ -75,6 +75,8 @@ export function isTechnicalUnlocalizedPath(pathname: string): boolean {
 }
 
 export function localizePath(inputPath: string, locale: SupportedLocale): string {
+  void locale;
+
   if (!inputPath || inputPath.startsWith("#")) {
     return inputPath;
   }
@@ -103,7 +105,7 @@ export function localizePath(inputPath: string, locale: SupportedLocale): string
   const suffix = normalizedInput.slice(pathEndIndex);
   const canonicalPath = stripLocalePrefix(pathname);
 
-  return `/${locale}${canonicalPath === "/" ? "" : canonicalPath}${suffix}`;
+  return `${canonicalPath === "/" ? "/" : canonicalPath}${suffix}`;
 }
 
 export function buildLocaleRedirectPath(

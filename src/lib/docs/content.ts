@@ -45,18 +45,18 @@ export const DOCS_PAGES: DocsPage[] = [
     group: "Getting Started",
     label: "Overview",
     eyebrow: "Getting Started",
-    title: "Sabimarket Overview",
+    title: "Lattice Overview",
     summary:
-      "Sabimarket is the consumer product. Lattice is the protocol and contract stack beneath it. The app lets users build structured stacks, copy shared positions, and provide LP liquidity while the backend owns pricing, persistence, and execution.",
+      "Lattice is the consumer app and protocol stack for structured prediction positions. The app lets users build structured stacks, copy shared positions, and provide LP liquidity while the backend owns pricing, persistence, and execution.",
     sections: [
       {
-        id: "what-is-sabimarket",
-        title: "What is Sabimarket",
+        id: "what-is-lattice",
+        title: "What is Lattice",
         blocks: [
           {
             type: "paragraphs",
             values: [
-              "Sabimarket is a blue-chip style consumer interface for structured prediction positions. Users do not need to understand contract internals to build a stack, load a bet code, or deposit into the LP vault.",
+              "Lattice is a consumer interface for structured prediction positions. Users do not need to understand contract internals to build a stack, load a bet code, or deposit into the LP vault.",
               "Under the hood, the product is powered by the Lattice backend and contracts. The backend computes the joint probability model, signs executable quotes, stores canonical leg order off-chain, and later resubmits those exact legs when settlement happens.",
             ],
           },
@@ -89,7 +89,7 @@ export const DOCS_PAGES: DocsPage[] = [
           {
             type: "callout",
             value:
-              "Sabimarket is the app surface. Lattice is the protocol layer. The docs use that distinction deliberately so frontend, backend, and contract responsibilities stay clear.",
+              "Lattice is documented as a full product stack here. When precision matters, frontend, backend, and contract responsibilities are called out explicitly.",
           },
           {
             type: "bullets",
@@ -552,7 +552,7 @@ export const DOCS_PAGES: DocsPage[] = [
     eyebrow: "Backend",
     title: "Account Abstraction",
     summary:
-      "Sabimarket uses a backend-managed smart-account path so the consumer product can expose a gasless flow without pushing the user through raw contract UX.",
+      "Lattice uses a backend-managed smart-account path so the product can expose a gasless flow without pushing the user through raw contract UX.",
     sections: [
       {
         id: "aa-flow",
@@ -638,7 +638,7 @@ export const DOCS_PAGES: DocsPage[] = [
             type: "paragraphs",
             values: [
               "A structured product is not credible if every stack simply multiplies raw leg probabilities while pretending every market is independent.",
-              "The correlation engine is what lets Sabimarket defend a product story beyond a cosmetic parlay wrapper.",
+              "The correlation engine is what lets Lattice defend a product story beyond a cosmetic parlay wrapper.",
             ],
           },
         ],
