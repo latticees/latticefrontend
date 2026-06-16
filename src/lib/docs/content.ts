@@ -47,56 +47,115 @@ export const DOCS_PAGES: DocsPage[] = [
     eyebrow: "Getting Started",
     title: "Lattice Overview",
     summary:
-      "Lattice is the consumer app and protocol stack for structured prediction positions. The app lets users build structured stacks, copy shared positions, and provide LP liquidity while the backend owns pricing, persistence, and execution.",
+      "Lattice is a correlation-aware structured prediction market. It replaces naive parlay multiplication with deterministic joint pricing, executes stacks through sponsored smart accounts, and turns positions into shareable, copyable financial products.",
     sections: [
       {
-        id: "what-is-lattice",
-        title: "What is Lattice",
+        id: "what-lattice-fixes",
+        title: "What Lattice fixes",
         blocks: [
           {
             type: "paragraphs",
             values: [
-              "Lattice is a consumer interface for structured prediction positions. Users do not need to understand contract internals to build a stack, load a bet code, or deposit into the LP vault.",
-              "Under the hood, the product is powered by the Lattice backend and contracts. The backend computes the joint probability model, signs executable quotes, stores canonical leg order off-chain, and later resubmits those exact legs when settlement happens.",
+              "Traditional multi-outcome products estimate a stack by multiplying raw leg probabilities as if every event were independent. That assumption breaks quickly in real prediction markets, where elections, rates, oil, wars, sports tournaments, and crypto prices often share the same entities, timelines, catalysts, or logical implications.",
+              "Lattice replaces cosmetic parlay logic with correlation-aware pricing. The product uses a deterministic semantic engine, a Gaussian-copula joint model, and on-chain quote verification so the consumer surface can stay simple while the protocol layer stays economically defensible.",
             ],
           },
+          {
+            type: "code",
+            language: "text",
+            value:
+              "Naive baseline: P(stack) = P1 * P2 * ... * Pn\nEffective joint probability: C_rho(P1, P2, ... Pn)\nPayout multiple: (1 - protocol risk premium) / effective joint probability",
+          },
+        ],
+      },
+      {
+        id: "product-pillars",
+        title: "Product pillars",
+        blocks: [
           {
             type: "cards",
             values: [
               {
-                badge: "Product",
-                title: "Stacks",
-                body: "Build 2 to 3 leg structured positions and receive an ERC-721 receipt when execution succeeds.",
+                badge: "Pricing",
+                title: "Correlation-aware stacks",
+                body: "Every stack is priced from a joint model instead of pretending every leg is independent.",
               },
               {
                 badge: "Liquidity",
-                title: "Earn",
-                body: "Deposit USDC into the LP vault and back live payout exposure with delayed redemption controls.",
+                title: "Vault-backed execution",
+                body: "USDC liquidity sits behind the structured product engine with reservation logic and delayed withdrawals.",
               },
               {
                 badge: "Distribution",
-                title: "Share & Copy",
-                body: "Bet codes, share cards, and copy flows let one structured position move through the product quickly.",
+                title: "Social stack surfaces",
+                body: "Bet codes, share cards, rooms, comments, copying, and leaderboards turn positions into reusable content.",
               },
+            ],
+          },
+          {
+            type: "callout",
+            value:
+              "Lattice is not AI generating arbitrary odds. The pricing path is deterministic and bounded. AI is used as an explanation layer on top of the same quote math.",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "buildathon-progress",
+    group: "Getting Started",
+    label: "Buildathon Progress",
+    eyebrow: "Getting Started",
+    title: "Buildathon Progress",
+    summary:
+      "During the buildathon, Lattice moved from a multi-market execution prototype into a complete correlation-priced prediction market with liquidity, social distribution, account abstraction, and cached read models.",
+    sections: [
+      {
+        id: "what-shipped",
+        title: "What shipped",
+        blocks: [
+          {
+            type: "bullets",
+            values: [
+              "Stack Engine V3 Gaussian Copula pricing with semantic fingerprints, signed pairwise relationships, positive-definite correlation matrices, Cholesky transforms, antithetic Halton sampling, Frechet bounds, and a strict 100x cap.",
+              "Full stack lifecycle from live market ingestion and quote generation to EIP-712 signing, sponsored execution, position receipts, indexing, settlement tracking, and reusable bet-code generation.",
+              "Live LP experience with wallet funding, vault deposits, vault shares, ownership tracking, utilization, delayed redemptions, and claim surfaces backed by on-chain reads.",
+              "Social and distribution surfaces including market rooms, posts, threaded comments, reactions, presence, builder leaderboards, shareable PNG stack cards, rich social previews, one-click stack copying, onboarding, localization, and portfolio storytelling.",
             ],
           },
         ],
       },
       {
-        id: "product-boundaries",
-        title: "Product boundaries",
+        id: "math-hardening",
+        title: "Math and reliability hardening",
         blocks: [
           {
-            type: "callout",
-            value:
-              "Lattice is documented as a full product stack here. When precision matters, frontend, backend, and contract responsibilities are called out explicitly.",
-          },
-          {
-            type: "bullets",
+            type: "paragraphs",
             values: [
-              "Frontend: discovery, builder UX, portfolio, earn, docs, share surfaces, localization, onboarding.",
-              "Backend: market ingestion, quote generation, AI suggestion/explainer, persistence, portfolio marking, leaderboard, vault reads, account abstraction orchestration.",
-              "Contracts: quote verification, LP collateral, position NFTs, compact position commitments, registry resolution, deterministic settlement.",
+              "The buildathon work was not only UI work. The biggest upgrade was replacing naive multiplication with a bounded joint-pricing engine that can explain why correlated legs compress payouts and why unrelated legs stay closer to the independence baseline.",
+              "Execution was also hardened against real account-abstraction failure modes. The backend now handles bundler receipt propagation, delayed RPC indexing, consumed quotes, asynchronous position hydration, and transaction reconciliation without mislabeling successful executions as failures.",
+            ],
+          },
+        ],
+      },
+      {
+        id: "quote-visibility",
+        title: "What users can see now",
+        blocks: [
+          {
+            type: "cards",
+            columns: 2,
+            values: [
+              {
+                badge: "Quote",
+                title: "Transparent math",
+                body: "Quotes can expose the independence baseline, effective probability, protocol edge, correlation adjustment, return multiple, and payout-cap status.",
+              },
+              {
+                badge: "Read models",
+                title: "Market-fast pages",
+                body: "Portfolio, Earn, Leaderboard, rooms, and share-card views are cached so they behave like trading surfaces, not slow admin dashboards.",
+              },
             ],
           },
         ],
@@ -110,7 +169,7 @@ export const DOCS_PAGES: DocsPage[] = [
     eyebrow: "Getting Started",
     title: "System Architecture",
     summary:
-      "The product is split into a Solid frontend, a Rust backend, and a Foundry-based contract system deployed on Robinhood Chain Testnet. Each layer has a hard responsibility boundary.",
+      "Lattice is split into a Solid frontend, a Rust backend, and a Solidity contract system on Robinhood Chain Testnet. Each layer has a hard responsibility boundary.",
     sections: [
       {
         id: "three-layers",
@@ -122,16 +181,16 @@ export const DOCS_PAGES: DocsPage[] = [
               {
                 badge: "Frontend",
                 title: "Solid app",
-                body: "Locale-aware routes, builder flows, share cards, portfolio, earn, leaderboard, and docs.",
+                body: "Discovery, builder UX, portfolio, earn, leaderboard, rooms, localization, onboarding, share cards, and docs.",
               },
               {
                 badge: "Backend",
                 title: "Rust services",
-                body: "Axum routes, SQLx persistence, quote math, AI endpoints, workers, and smart-account execution.",
+                body: "Market ingestion, quote math, AI explainers, caching, portfolio reads, smart-account execution, indexing, and settlement orchestration.",
               },
               {
                 badge: "Contracts",
-                title: "Lattice protocol",
+                title: "Protocol layer",
                 body: "QuoteVerifier, LatticeCore, LPVault, PositionToken, ReferenceRegistry, SettlementManager, and CompositeVault.",
               },
             ],
@@ -145,12 +204,12 @@ export const DOCS_PAGES: DocsPage[] = [
           {
             type: "ordered",
             values: [
-              "User selects legs in the builder or loads them from a bet code.",
+              "User selects legs manually, loads a bet code, or copies a shared stack.",
               "Frontend requests a quote from the backend instead of pricing locally.",
-              "Backend fetches or resolves market inputs, computes correlation-aware pricing, signs the quote, and persists quote state.",
-              "User executes through the backend account-abstraction flow using Robinhood Chain testnet infrastructure.",
-              "Contracts reserve LP liquidity, escrow stake, and mint a transferable position NFT.",
-              "Workers and resolution services monitor final outcomes and settle the position deterministically.",
+              "Backend normalizes market inputs, computes the semantic relationship model, runs joint pricing, signs an executable quote, and persists canonical ordered legs.",
+              "User executes the quote through the sponsored smart-account path.",
+              "Contracts verify the quote, reserve liquidity, escrow stake, and mint a position receipt.",
+              "Workers later reconcile the position, monitor outcome resolution, and settle deterministically with the original ordered leg list.",
             ],
           },
         ],
@@ -164,79 +223,97 @@ export const DOCS_PAGES: DocsPage[] = [
     eyebrow: "Products",
     title: "Custom Stacks",
     summary:
-      "Custom Stacks are the main consumer product: 2 to 3 legs, one signed quote, one on-chain execution, and one position NFT that represents the structured position.",
+      "Custom Stacks are the main consumer product: 2 to 3 correlated legs, one signed quote, one on-chain execution, and one position receipt tied to a shareable thesis.",
     sections: [
       {
-        id: "stack-limits",
-        title: "Current stack limits",
+        id: "product-shape",
+        title: "Product shape",
         blocks: [
           {
             type: "table",
             value: {
               columns: ["Parameter", "Current value", "Why it matters"],
               rows: [
-                ["Minimum leg count", "2", "Prevents single-leg flow from bypassing the structured product model."],
-                ["Maximum leg count", "3", "Keeps execution, pricing, and risk bounded on the current protocol version."],
-                ["Payout cap", "100x", "Enforced by risk config on the core contract."],
-                ["Quote validity window", "30 days", "Signed quotes expire if not used inside the configured window."],
+                ["Minimum leg count", "2", "Keeps the product focused on structured positions rather than single-market flow."],
+                ["Maximum leg count", "3", "Bounds pricing, execution, and current protocol risk."],
+                ["Payout cap", "100x", "Prevents extreme long-tail payouts from draining LP liquidity."],
+                ["Quote validity window", "30 days", "Signed quotes expire if not executed inside the configured window."],
               ],
             },
           },
         ],
       },
       {
-        id: "execution-shape",
-        title: "Execution shape",
+        id: "share-and-copy",
+        title: "Share and copy surfaces",
         blocks: [
           {
-            type: "paragraphs",
+            type: "bullets",
             values: [
-              "The protocol does not store every leg on-chain after position creation. Instead, the quote commits to a legs hash and leg count. That keeps the on-chain position compact while still enforcing deterministic settlement later.",
-              "Because of that compact commitment model, the backend becomes the canonical source for the ordered leg list used at quote time and submitted again during settlement.",
+              "Every confirmed position can become a reusable bet code.",
+              "Shared stacks can be reopened in the builder in one tap.",
+              "The share surface includes a dedicated public stack page plus a PNG-style visual share card flow.",
+              "Copying is not an afterthought. It is a first-class distribution primitive for the structured product.",
             ],
           },
           {
             type: "code",
             language: "text",
             value:
-              "LatticeCore.executeStack(quote, legs, signature)\n  -> QuoteVerifier validates signature + expiry + recipient + legsHash\n  -> LPVault escrows stake + reserves payout\n  -> PositionToken mints ERC-721 receipt",
+              "LatticeCore.executeStack(quote, legs, signature)\n  -> QuoteVerifier validates recipient, expiry, signature, and legs commitment\n  -> LPVault escrows stake and reserves payout exposure\n  -> PositionToken mints the receipt used by portfolio and share flows",
           },
         ],
       },
     ],
   },
   {
-    slug: "composites",
+    slug: "social-and-distribution",
     group: "Products",
-    label: "Composites",
+    label: "Social & Distribution",
     eyebrow: "Products",
-    title: "Composites",
+    title: "Social And Distribution",
     summary:
-      "Composites are the thematic basket layer in the protocol. They sit next to custom stacks and allow weighted exposure to a curated theme rather than a single manually assembled parlay.",
+      "Lattice is designed so structured prediction positions can move through the product as content, not only as private transactions.",
     sections: [
       {
-        id: "why-composites",
-        title: "Why composites exist",
+        id: "social-surfaces",
+        title: "Social surfaces",
         blocks: [
           {
-            type: "bullets",
+            type: "cards",
             values: [
-              "They let the product offer opinionated basket products such as macro, election, or World Cup themes.",
-              "They reuse the same LP-backed liquidity architecture instead of introducing a separate collateral silo.",
-              "They make distribution easier because the unit being shared is a named basket, not just a raw list of market refs.",
+              {
+                badge: "Rooms",
+                title: "Live thesis rooms",
+                body: "Market rooms let users post a thesis, attach bet codes, react, and track live presence around a category or event.",
+              },
+              {
+                badge: "Comments",
+                title: "Threaded market comments",
+                body: "Market detail pages support comment threads, replies, and likes instead of forcing discussion into external channels.",
+              },
+              {
+                badge: "Competition",
+                title: "Builder leaderboard",
+                body: "Realized PnL, accuracy, streak, biggest hit, and best multiple make the market feel alive and competitive.",
+              },
             ],
           },
         ],
       },
       {
-        id: "current-state",
-        title: "Current state",
+        id: "distribution-features",
+        title: "Distribution features",
         blocks: [
           {
-            type: "paragraphs",
+            type: "bullets",
             values: [
-              "CompositeVault is deployed in the contract layer, but the consumer surface is still earlier than stacks. In other words, the protocol support exists, while the product layer is still being expanded.",
-              "This is why the docs treat Composites as a product lane with protocol support, not as the most mature user-facing flow today.",
+              "Shareable stack cards with a public deep link back into the exact stack.",
+              "Rich social previews for shared stack pages.",
+              "One-click stack copying from bet codes and public receipts.",
+              "Curated composites and themed theses that make distribution easier than sharing raw leg lists.",
+              "Guided onboarding and multilingual discovery so the product is legible before the first trade.",
+              "Portfolio storytelling that turns positions into best calls, worst calls, biggest exposure, and recent outcomes instead of a flat table.",
             ],
           },
         ],
@@ -250,7 +327,7 @@ export const DOCS_PAGES: DocsPage[] = [
     eyebrow: "Products",
     title: "Earn",
     summary:
-      "Earn is the LP-facing surface. Users deposit USDC into the vault, hold vault shares, reserve liquidity for live stack exposure, and redeem with a withdrawal delay.",
+      "Earn is the LP-facing surface. Users deposit USDC into the vault, receive shares, reserve capital for live stack exposure, and redeem through a delayed withdrawal flow.",
     sections: [
       {
         id: "vault-mechanics",
@@ -262,42 +339,47 @@ export const DOCS_PAGES: DocsPage[] = [
               {
                 badge: "Collateral",
                 title: "USDC vault",
-                body: "Mock USDC on Robinhood Chain Testnet is the collateral asset used for LP accounting today.",
+                body: "Mock USDC on Robinhood Chain Testnet is the collateral asset used by LP accounting in the live environment.",
               },
               {
                 badge: "Delay",
-                title: "7-day redemption lock",
-                body: "Pending redeems stay locked before they can be claimed, which is designed to reduce bank-run behavior.",
+                title: "7-day withdrawal delay",
+                body: "Pending redeems wait through a delay before they become claimable, reducing bank-run behavior during live exposure.",
               },
               {
                 badge: "Accounting",
-                title: "Share price model",
-                body: "Ownership is represented by vault shares, and current asset value comes from live vault accounting rather than a fixed promise.",
+                title: "Share-price model",
+                body: "Users hold vault shares, not fixed promises. Ownership and asset value come from live vault accounting.",
               },
             ],
           },
         ],
       },
       {
-        id: "earn-api",
-        title: "Earn API surface",
+        id: "lp-experience",
+        title: "LP experience",
         blocks: [
+          {
+            type: "bullets",
+            values: [
+              "Fund wallet cash, then move that cash into the vault with a dedicated deposit flow.",
+              "Track total deposited, available liquidity, reserved liquidity, escrowed stake, utilization, and user ownership.",
+              "View pending redeems, unlock date, claim status, and live share price without leaving the main Earn surface.",
+              "Projection surfaces can show how current yield assumptions translate into future value over longer holding horizons.",
+            ],
+          },
           {
             type: "table",
             value: {
               columns: ["Endpoint", "Purpose"],
               rows: [
-                ["GET /me/earn", "Return authenticated vault overview, personal LP balance, pending redeem state, and live vault metrics."],
-                ["Wallet funding flow", "Adds test USDC to wallet cash before a deposit into the vault."],
-                ["Deposit flow", "Moves wallet cash into the vault and returns vault shares."],
+                ["GET /me/earn", "Authenticated vault overview, LP ownership, pending redeem state, and live vault metrics."],
+                ["POST /me/earn/deposit", "Move wallet cash into the vault and mint shares."],
+                ["POST /me/earn/redeem/request", "Begin the delayed withdrawal flow."],
+                ["POST /me/earn/redeem/cancel", "Cancel a pending redeem before claim."],
+                ["POST /me/earn/redeem/claim", "Claim redeemable liquidity after the delay clears."],
               ],
             },
-          },
-          {
-            type: "paragraphs",
-            values: [
-              "The current page reads live vault state from the backend read model. Withdraw and claim write flows are separate actions on top of the same vault accounting surface.",
-            ],
           },
         ],
       },
@@ -310,21 +392,21 @@ export const DOCS_PAGES: DocsPage[] = [
     eyebrow: "Backend",
     title: "Backend Overview",
     summary:
-      "The backend is not a thin API wrapper. It owns quote math, canonical leg persistence, share/read models, settlement preparation, vault reads, AI endpoints, and smart-account execution.",
+      "The backend is the economic and operational control plane of Lattice. It owns quote math, canonical leg persistence, AI explainers, cached read models, execution orchestration, and settlement preparation.",
     sections: [
       {
-        id: "backend-responsibilities",
+        id: "responsibilities",
         title: "Primary responsibilities",
         blocks: [
           {
             type: "bullets",
             values: [
               "Ingest and normalize market data used by the stack engine.",
-              "Price stacks, compute correlation penalties, and sign executable quotes.",
-              "Persist canonical quote and position state needed later for settlement.",
-              "Expose authenticated read surfaces such as portfolio and earn.",
-              "Run worker-style jobs for indexing, registry sync, settlement, and cached read models.",
-              "Handle gasless smart-account execution on Robinhood Chain testnet.",
+              "Compute correlation-aware stack pricing and sign executable quotes.",
+              "Persist quote, leg-order, position, portfolio, and social read-model state.",
+              "Expose authenticated product surfaces such as portfolio and earn.",
+              "Run background workers for indexing, reconciliation, settlement, and cache refresh.",
+              "Handle gas-sponsored account-abstraction execution on Robinhood Chain Testnet.",
             ],
           },
         ],
@@ -337,19 +419,19 @@ export const DOCS_PAGES: DocsPage[] = [
             type: "cards",
             values: [
               {
-                badge: "Quote path",
-                title: "Live request services",
-                body: "Quote generation, AI suggestion/explain, stack execution, share-card reads, and authenticated account views.",
+                badge: "Live routes",
+                title: "Request path",
+                body: "Quote generation, execution, AI endpoints, portfolio reads, earn reads, leaderboards, rooms, and share-card payloads.",
               },
               {
                 badge: "Workers",
-                title: "Background processing",
-                body: "Indexers, registry sync, settlement workers, and read-model refreshes keep live routes fast.",
+                title: "Background jobs",
+                body: "Indexers, registry sync, position hydration, settlement workers, and cache refreshes keep the live pages fast.",
               },
               {
                 badge: "Persistence",
-                title: "Postgres-backed state",
-                body: "Quotes, positions, legs, portfolio story data, leaderboard stats, and vault snapshots come from backend-managed data.",
+                title: "Canonical state",
+                body: "Quotes, ordered legs, positions, reactions, comments, leaderboard stats, and vault snapshots come from backend-managed records.",
               },
             ],
           },
@@ -364,7 +446,7 @@ export const DOCS_PAGES: DocsPage[] = [
     eyebrow: "Backend",
     title: "Quote Service",
     summary:
-      "The quote service is the economic center of the backend. The frontend never computes the multiple itself. The backend computes the full stack price and returns a signed quote.",
+      "The quote service is the economic center of the product. The browser never computes the return multiple itself. The backend produces the effective probability, payout, and signed quote.",
     sections: [
       {
         id: "quote-endpoints",
@@ -375,44 +457,38 @@ export const DOCS_PAGES: DocsPage[] = [
             value: {
               columns: ["Endpoint", "Purpose"],
               rows: [
-                ["POST /stacks/quote", "Validate legs, compute pricing, and return a signed executable quote or execution blockers."],
+                ["POST /stacks/quote", "Validate legs, run the pricing engine, and return a signed executable quote."],
                 ["POST /stacks/quotes/refresh", "Refresh an existing quote when inputs or validity need to be renewed."],
-                ["POST /stacks/execute", "Submit the approved stack through the backend execution path."],
+                ["POST /stacks/execute", "Execute an approved quote through the account-abstraction path."],
               ],
             },
           },
         ],
       },
       {
-        id: "quote-ownership",
-        title: "Why quote math stays server-side",
+        id: "quote-visibility",
+        title: "What the quote can surface",
         blocks: [
           {
             type: "bullets",
             values: [
-              "Leg probabilities and market refs are normalized server-side.",
-              "The joint probability model is correlation-aware and should not drift between frontend builds.",
-              "Risk caps, payout clamps, and liquidity-aware adjustments belong to the backend because they depend on protocol state.",
-              "The signature and quote digest must be produced by a trusted signer, not by the browser.",
+              "Independence baseline probability.",
+              "Correlation-adjusted effective probability.",
+              "Correlation premium or compression versus naive multiplication.",
+              "Protocol edge, return multiple, projected return, and payout-cap status.",
+              "Execution blockers when market status, liquidity, or quote integrity would make the stack unsafe to open.",
             ],
           },
         ],
       },
       {
-        id: "quote-shape",
-        title: "Quote payload shape",
+        id: "why-server-side",
+        title: "Why the quote stays server-side",
         blocks: [
           {
-            type: "code",
-            language: "json",
-            value: `{
-  "recipient": "0x...",
-  "stake": "100000000",
-  "legs": [
-    { "market_ref": "0x...", "outcome": 1 },
-    { "market_ref": "0x...", "outcome": 0 }
-  ]
-}`,
+            type: "callout",
+            value:
+              "Joint pricing, payout clamps, liquidity-aware checks, and the executable signature belong to the backend. The browser is a display and approval layer, not the pricing authority.",
           },
         ],
       },
@@ -423,73 +499,50 @@ export const DOCS_PAGES: DocsPage[] = [
     group: "Backend",
     label: "Execution & Indexing",
     eyebrow: "Backend",
-    title: "Execution & Indexing",
+    title: "Execution And Indexing",
     summary:
-      "Execution is only half the job. Once a position opens, the backend has to reconcile the emitted on-chain position with the exact ordered legs used at quote time.",
+      "Execution is only the opening act. The backend must later reconcile the on-chain position with the exact ordered legs used when the quote was signed.",
     sections: [
       {
-        id: "why-indexing-matters",
-        title: "Why indexing matters",
+        id: "canonical-order",
+        title: "Why canonical leg order matters",
         blocks: [
           {
             type: "paragraphs",
             values: [
-              "The contracts no longer store every leg in the opened position record. They store legsHash and legCount. That means the backend must persist the canonical ordered legs when the quote is created and tie them back to the position ID after execution.",
-              "If the backend loses or reorders the legs later, deterministic settlement fails even if the set of legs is technically the same.",
+              "Lattice stores a compact commitment on-chain instead of writing every leg into the opened position record. The contracts rely on a legs hash and leg count, which keeps execution compact but makes off-chain canonical ordering mandatory.",
+              "If the backend loses that exact leg order, settlement can fail even when the set of legs appears identical. Quote persistence is therefore not bookkeeping. It is part of protocol correctness.",
             ],
           },
         ],
       },
       {
-        id: "position-data-model",
+        id: "reliability-path",
+        title: "Reliability path",
+        blocks: [
+          {
+            type: "bullets",
+            values: [
+              "Persist the quote digest and ordered legs before submission.",
+              "Decode confirmed receipts and hydrate positions even when indexing lags.",
+              "Reconcile consumed quotes and delayed PositionOpened visibility without telling the user a successful execution failed.",
+              "Use workers to backfill opened positions and later connect them to resolution and settlement state.",
+            ],
+          },
+        ],
+      },
+      {
+        id: "position-model",
         title: "Position data model",
         blocks: [
           {
             type: "bullets",
             values: [
-              "stack_quotes stores quote digest, recipient, stake, total return, validity, and status.",
-              "stack_quote_legs stores ordered quote legs by position index.",
-              "stack_positions stores position ID, owner, legs hash, total return, status, and settlement timestamps.",
-              "stack_position_legs stores the ordered settlement list plus resolved outcomes.",
+              "stack_quotes stores recipient, stake, return, validity, digest, and quote status.",
+              "stack_quote_legs stores the canonical ordered leg list used by the signed quote.",
+              "stack_positions stores the on-chain position identity, owner, legs commitment, and settlement status.",
+              "stack_position_legs stores the ordered settlement list with resolved outcomes.",
             ],
-          },
-        ],
-      },
-    ],
-  },
-  {
-    slug: "resolution-workers",
-    group: "Backend",
-    label: "Resolution Workers",
-    eyebrow: "Backend",
-    title: "Resolution Workers",
-    summary:
-      "Resolution workers watch external venues, map final outcomes into canonical market references, and call the registry plus settlement contracts once every leg can be finalized.",
-    sections: [
-      {
-        id: "resolution-policy",
-        title: "Resolution policy",
-        blocks: [
-          {
-            type: "ordered",
-            values: [
-              "Auto-resolve only when the external venue exposes a clearly final state.",
-              "Wait during post-close grace windows when the market is still proposed or ambiguous.",
-              "Queue manual review when the external status is disputed, delayed, or price signals are not decisive.",
-              "Store the exact external payload used to justify auto-resolution or review escalation.",
-            ],
-          },
-        ],
-      },
-      {
-        id: "settlement-call",
-        title: "Settlement call shape",
-        blocks: [
-          {
-            type: "code",
-            language: "text",
-            value:
-              "SettlementManager.settlePosition(positionId, legs)\n\nThe submitted legs must match the original order used at quote time so the recomputed legsHash matches the stored commitment.",
           },
         ],
       },
@@ -500,45 +553,42 @@ export const DOCS_PAGES: DocsPage[] = [
     group: "Backend",
     label: "Portfolio & Earn APIs",
     eyebrow: "Backend",
-    title: "Portfolio & Earn APIs",
+    title: "Portfolio And Earn APIs",
     summary:
-      "Portfolio and Earn are not generic wallet pages. They are backend read models built on top of stack positions and LP vault state, respectively.",
+      "Portfolio and Earn are product read models, not generic wallet tabs. They translate live positions and vault state into opinionated user-facing surfaces.",
     sections: [
       {
-        id: "portfolio-apis",
-        title: "Portfolio APIs",
+        id: "portfolio-read-model",
+        title: "Portfolio read model",
         blocks: [
           {
             type: "table",
             value: {
               columns: ["Endpoint", "Purpose"],
               rows: [
-                ["GET /me/portfolio", "Return funds-in-market summary plus story metrics such as best call, worst call, and biggest live exposure."],
-                ["GET /me/portfolio/stacks", "Return the position feed with stake, marked value, P&L, status, and ordered legs."],
-                ["GET /stacks/bets/:betCode", "Return public stack-share detail for copy and receipt flows."],
-              ],
-            },
-          },
-        ],
-      },
-      {
-        id: "earn-apis",
-        title: "Earn APIs",
-        blocks: [
-          {
-            type: "table",
-            value: {
-              columns: ["Endpoint", "Purpose"],
-              rows: [
-                ["GET /me/earn", "Return vault overview, user LP state, pending redeem information, and projected ownership figures."],
-                ["GET /stacks/leaderboard", "Public aggregate surface over settled positions used by the competition layer."],
+                ["GET /me/portfolio", "Funds-in-market summary plus story metrics such as best call, worst call, and biggest live exposure."],
+                ["GET /me/portfolio/stacks", "Position feed with stake, marked value, PnL, status, bet code, and ordered legs."],
+                ["GET /stacks/bets/:betCode", "Public stack-share detail used by copy and receipt flows."],
               ],
             },
           },
           {
             type: "paragraphs",
             values: [
-              "These surfaces are cached as backend read models so they feel market-fast instead of recomputing every marked position on every request.",
+              "The portfolio surface is intentionally narrative, not only tabular. It turns structured product activity into best calls, worst calls, live exposure, big hits, and recent outcomes so users can understand their own behavior quickly.",
+            ],
+          },
+        ],
+      },
+      {
+        id: "cached-reads",
+        title: "Why these pages feel fast",
+        blocks: [
+          {
+            type: "paragraphs",
+            values: [
+              "Portfolio, Earn, Leaderboard, rooms, and share-card routes are cached as backend read models. That avoids recomputing marked positions, vault ownership, or social aggregates on every request.",
+              "The caching layer is what makes these pages feel closer to market browsing than to a slow back-office dashboard.",
             ],
           },
         ],
@@ -552,7 +602,7 @@ export const DOCS_PAGES: DocsPage[] = [
     eyebrow: "Backend",
     title: "Account Abstraction",
     summary:
-      "Lattice uses a backend-managed smart-account path so the product can expose a gasless flow without pushing the user through raw contract UX.",
+      "Lattice uses a backend-managed sponsored smart-account path so users can execute structured positions without raw contract UX or separate gas funding steps.",
     sections: [
       {
         id: "aa-flow",
@@ -561,24 +611,26 @@ export const DOCS_PAGES: DocsPage[] = [
           {
             type: "ordered",
             values: [
-              "User signs in with Google and receives an app session tied to a smart-account owner record.",
-              "Backend prepares calls, estimates gas, and requests sponsorship from the configured paymaster path.",
-              "The bundler submits the user operation to Robinhood Chain testnet.",
-              "Receipt polling updates the stack execution state after submission.",
+              "User signs in and is associated with a smart-account owner profile.",
+              "Backend builds the calls required for the stack or vault action.",
+              "Gas is estimated and sponsorship is requested through the configured paymaster path.",
+              "The bundler submits the user operation to Robinhood Chain Testnet.",
+              "Receipt polling and background hydration update execution state and later connect it to indexed positions.",
             ],
           },
         ],
       },
       {
-        id: "aa-components",
-        title: "AA components",
+        id: "aa-hardening",
+        title: "AA hardening",
         blocks: [
           {
             type: "bullets",
             values: [
-              "Bundler RPC and paymaster RPC are configured server-side.",
-              "The backend owns user-operation packing, sponsorship application, and submission retries.",
-              "Smart-account execution is integrated with the stack flow instead of existing as a separate wallet product.",
+              "Bundler receipt propagation is handled explicitly.",
+              "Delayed RPC indexing does not automatically translate into visible execution failure.",
+              "Consumed quotes are reconciled cleanly instead of creating duplicate submission confusion.",
+              "Asynchronous position hydration allows the product to recover gracefully when on-chain events arrive later than the initial receipt surface.",
             ],
           },
         ],
@@ -592,7 +644,7 @@ export const DOCS_PAGES: DocsPage[] = [
     eyebrow: "Intelligence",
     title: "Correlation Engine",
     summary:
-      "The current pricing engine is no longer naive independence. It uses a semantic pipeline to score market relationships before joint pricing is produced.",
+      "Lattice uses a deterministic five-layer semantic engine to transform market relationships into signed pairwise coefficients before joint pricing is ever computed.",
     sections: [
       {
         id: "five-layers",
@@ -603,42 +655,42 @@ export const DOCS_PAGES: DocsPage[] = [
             values: [
               {
                 badge: "1",
-                title: "Lexical tokens",
-                body: "Overlap in titles, phrasing, and recurring market text.",
+                title: "Lexical overlap",
+                body: "Shared language, repeated phrasing, and token-level title similarity.",
               },
               {
                 badge: "2",
-                title: "Entities",
-                body: "Countries, teams, politicians, venues, and other named references.",
+                title: "Named entities",
+                body: "Countries, teams, politicians, exchanges, venues, companies, and other recurring references.",
               },
               {
                 badge: "3",
                 title: "Themes",
-                body: "Category-level clustering like World Cup, macro, politics, or crypto.",
+                body: "Category-level clustering such as World Cup, macro, elections, oil, or crypto.",
               },
               {
                 badge: "4",
-                title: "Time/event overlap",
-                body: "Shared windows, event proximity, and same-event structure.",
+                title: "Time and event proximity",
+                body: "Shared windows, same-event relationships, and close temporal structure.",
               },
               {
                 badge: "5",
-                title: "Logic",
-                body: "Alignment, implication, or contradiction across outcomes.",
+                title: "Logical alignment",
+                body: "Implication, contradiction, overlap, or mutual exclusivity between outcomes.",
               },
             ],
           },
         ],
       },
       {
-        id: "why-exists",
-        title: "Why it exists",
+        id: "output",
+        title: "What the engine emits",
         blocks: [
           {
             type: "paragraphs",
             values: [
-              "A structured product is not credible if every stack simply multiplies raw leg probabilities while pretending every market is independent.",
-              "The correlation engine is what lets Lattice defend a product story beyond a cosmetic parlay wrapper.",
+              "The semantic layers are converted into signed pairwise correlation coefficients, usually described as rho_ij, and assembled into a valid correlation matrix for the pricing engine.",
+              "This is what lets Lattice distinguish between positively related legs, genuinely diversified legs, and mutually exclusive outcomes that should not be treated like ordinary positive correlation.",
             ],
           },
         ],
@@ -652,32 +704,57 @@ export const DOCS_PAGES: DocsPage[] = [
     eyebrow: "Intelligence",
     title: "Copula Pricing",
     summary:
-      "The correlation signals are converted into signed pairwise rho values and then fed into a Gaussian-copula-style joint model that produces the effective probability used in the quote.",
+      "The stack engine turns marginal market probabilities plus semantic relationship coefficients into a bounded joint probability using Gaussian-copula-style pricing.",
     sections: [
       {
-        id: "pricing-steps",
-        title: "Pricing steps",
+        id: "pricing-flow",
+        title: "Pricing flow",
         blocks: [
           {
             type: "ordered",
             values: [
-              "Resolve marginal leg probabilities from market inputs.",
-              "Compute pairwise semantic features and map them into signed rho values.",
-              "Build the correlation matrix used by the joint probability engine.",
-              "Clamp outputs against protocol risk limits and payout caps.",
-              "Return effective joint probability, correlation penalty, total return, and capital multiple.",
+              "Resolve marginal leg probabilities from normalized market inputs.",
+              "Map pairwise semantic features into signed rho values.",
+              "Assemble a valid correlation matrix for the stack.",
+              "Transform marginals into normal thresholds and correlate them through Cholesky decomposition.",
+              "Estimate joint probability using antithetic Halton quasi-Monte Carlo sampling.",
+              "Clamp the result inside mathematically valid Frechet bounds.",
+              "Apply protocol risk margins and payout caps before returning the final executable quote.",
             ],
           },
         ],
       },
       {
-        id: "frontend-contract",
-        title: "Frontend contract",
+        id: "why-better-than-naive",
+        title: "Why this is better than naive multiplication",
         blocks: [
           {
-            type: "callout",
+            type: "paragraphs",
+            values: [
+              "Positively correlated legs receive payout compression because their joint win path is less surprising than naive independence suggests. Truly diversified legs stay closer to the independence baseline. Mutually exclusive outcomes can be detected as negative or contradictory relationships instead of being priced like ordinary overlap.",
+              "This directly reduces the classic failure mode in structured prediction products: inflated long-tail payouts that sophisticated users can exploit against passive liquidity.",
+            ],
+          },
+          {
+            type: "code",
+            language: "text",
             value:
-              "The browser never owns this math. It receives the resulting numbers from the backend and displays them as the source of truth for quote and execution.",
+              "Effective joint probability = C_rho(P1, P2, ... Pn)\nPayout multiple = (1 - protocol risk premium) / effective joint probability\nMax payout = 100x",
+          },
+        ],
+      },
+      {
+        id: "testable-engine",
+        title: "Deterministic and testable",
+        blocks: [
+          {
+            type: "bullets",
+            values: [
+              "Related outcomes increase effective joint probability and compress payouts.",
+              "Mutually exclusive winners are recognized as contradictory relationships.",
+              "Unrelated legs remain close to the independence baseline.",
+              "Extreme longshots cannot create unbounded vault exposure because the engine is capped and bounded.",
+            ],
           },
         ],
       },
@@ -690,7 +767,7 @@ export const DOCS_PAGES: DocsPage[] = [
     eyebrow: "Intelligence",
     title: "AI Explainers",
     summary:
-      "The AI layer is more useful as an explainer than as an unbounded picker. It tells the user why a stack works and why the payout changed, instead of pretending to be a magic prediction engine.",
+      "The AI layer does not set the price. It reads the same deterministic quote inputs and translates the math into plain language for the user.",
     sections: [
       {
         id: "explainer-scope",
@@ -699,10 +776,11 @@ export const DOCS_PAGES: DocsPage[] = [
           {
             type: "bullets",
             values: [
-              "Why these legs fit together.",
-              "Where the detected correlation came from.",
-              "Why the payout differs from naive independence.",
-              "What the risk premium means in plain language.",
+              "Explain why these legs fit together.",
+              "Show where the detected correlation came from.",
+              "Explain why the payout changed versus naive independence.",
+              "Describe what the protocol risk premium means in plain language.",
+              "Summarize the shared entities, themes, dates, or logical relationships behind the quote.",
             ],
           },
         ],
@@ -717,10 +795,15 @@ export const DOCS_PAGES: DocsPage[] = [
               columns: ["Endpoint", "Purpose"],
               rows: [
                 ["POST /stacks/ai/suggest", "Return structured stack suggestions from prompt input."],
-                ["POST /stacks/ai/explain", "Return an explanation for correlation, pricing, and risk interpretation."],
-                ["GET /stacks/composites", "Return curated themed stack/composite ideas for the UI."],
+                ["POST /stacks/ai/explain", "Return a pricing and correlation explanation grounded in the same quote inputs."],
+                ["GET /stacks/composites", "Return curated themed composites and structured market ideas."],
               ],
             },
+          },
+          {
+            type: "callout",
+            value:
+              "AI is intentionally scoped as explanation and productization, not as an unbounded black-box odds engine.",
           },
         ],
       },
@@ -733,7 +816,7 @@ export const DOCS_PAGES: DocsPage[] = [
     eyebrow: "Contracts",
     title: "Smart Contracts",
     summary:
-      "The on-chain layer is split across verification, liquidity, settlement, registry, and token modules. Each contract has a narrowly scoped role in the lifecycle.",
+      "The on-chain layer is split across quote verification, execution, liquidity, settlement, registry, and token modules. Each contract has a narrow role in the lifecycle.",
     sections: [
       {
         id: "modules",
@@ -744,11 +827,11 @@ export const DOCS_PAGES: DocsPage[] = [
             values: [
               {
                 title: "QuoteVerifier",
-                body: "Validates signature, expiry, recipient, and quote commitment fields.",
+                body: "Validates EIP-712 signatures, recipients, expiries, and quote commitments.",
               },
               {
                 title: "LatticeCore",
-                body: "Executes stacks and stores compact commitments for later settlement.",
+                body: "Executes stacks and stores compact commitments used later by settlement.",
               },
               {
                 title: "LPVault",
@@ -760,11 +843,11 @@ export const DOCS_PAGES: DocsPage[] = [
               },
               {
                 title: "ReferenceRegistry",
-                body: "Stores canonical market references and final resolutions.",
+                body: "Stores canonical market references and their final resolutions.",
               },
               {
                 title: "SettlementManager",
-                body: "Recomputes submitted leg commitments and closes positions deterministically.",
+                body: "Recomputes leg commitments and finalizes positions deterministically.",
               },
             ],
           },
@@ -779,8 +862,21 @@ export const DOCS_PAGES: DocsPage[] = [
     eyebrow: "Contracts",
     title: "Risk Controls",
     summary:
-      "Risk is enforced in layers: backend validation before signing, liquidity and quote checks during execution, and strict settlement verification after markets resolve.",
+      "Risk is enforced in layers: before signing, during execution, and again at settlement. The frontend is not trusted as the source of truth for safety checks.",
     sections: [
+      {
+        id: "quote-binding",
+        title: "Quote binding",
+        blocks: [
+          {
+            type: "paragraphs",
+            values: [
+              "Every executable quote is bound through EIP-712 to its recipient, stake, return, expiry, ordered legs, metadata, and Robinhood Chain domain.",
+              "That means the user is not approving an abstract intent. They are approving a specific structured position with specific economics and a specific commitment.",
+            ],
+          },
+        ],
+      },
       {
         id: "control-layers",
         title: "Control layers",
@@ -788,23 +884,11 @@ export const DOCS_PAGES: DocsPage[] = [
           {
             type: "bullets",
             values: [
-              "Leg count bounds enforced by contract risk configuration.",
-              "Quote integrity checks enforced by QuoteVerifier.",
-              "LP liquidity reservation enforced by LPVault.",
-              "Leg hash and leg count commitments enforced by LatticeCore and SettlementManager.",
-              "Delayed vault redemption enforced by LPVault withdrawal delay.",
-            ],
-          },
-        ],
-      },
-      {
-        id: "risk-philosophy",
-        title: "Risk philosophy",
-        blocks: [
-          {
-            type: "paragraphs",
-            values: [
-              "The protocol assumes the frontend can be wrong, stale, or malicious. That is why quote integrity, payout reservation, and settlement validation are not delegated to UI state.",
+              "Leg-count bounds and payout limits are enforced by protocol configuration.",
+              "Quote integrity is enforced by QuoteVerifier.",
+              "Liquidity reservation is enforced by LPVault before the position opens.",
+              "Leg hash and leg count commitments are enforced by LatticeCore and SettlementManager.",
+              "Delayed LP withdrawals are enforced by the vault to reduce liquidity shock risk.",
             ],
           },
         ],
@@ -816,12 +900,12 @@ export const DOCS_PAGES: DocsPage[] = [
     group: "Contracts",
     label: "Settlement & Oracles",
     eyebrow: "Contracts",
-    title: "Settlement & Oracles",
+    title: "Settlement And Oracles",
     summary:
-      "Settlement is deterministic once canonical market references are resolved. The registry is the translation layer between external venue outcomes and on-chain finality.",
+      "Settlement becomes deterministic once canonical market references are resolved. The registry is the bridge between external market outcomes and on-chain finality.",
     sections: [
       {
-        id: "market-ref-policy",
+        id: "canonical-refs",
         title: "Canonical market references",
         blocks: [
           {
@@ -833,7 +917,7 @@ export const DOCS_PAGES: DocsPage[] = [
           {
             type: "paragraphs",
             values: [
-              "If the backend signs a quote using one market reference convention and the registry importer resolves a different reference, execution and settlement break even if the source market is the same.",
+              "Quote generation, indexing, and settlement all have to agree on the exact market reference convention. If those layers drift, settlement correctness breaks even when they are all talking about the same external market in human terms.",
             ],
           },
         ],
@@ -845,7 +929,7 @@ export const DOCS_PAGES: DocsPage[] = [
           {
             type: "callout",
             value:
-              "Settlement is deterministic only if the original ordered leg list survives intact from quote, to execution, to final submission into SettlementManager.",
+              "Settlement only works if the original ordered leg list survives intact from quote generation, to execution, to final submission into SettlementManager.",
           },
         ],
       },
@@ -858,7 +942,7 @@ export const DOCS_PAGES: DocsPage[] = [
     eyebrow: "Contracts",
     title: "Deployed Contracts",
     summary:
-      "The current deployment is on Robinhood Chain Testnet and includes the full quote, registry, core, vault, token, settlement, and composite contract set.",
+      "The current live protocol deployment is on Robinhood Chain Testnet and includes the full quote, core, vault, registry, token, settlement, and composite contract set.",
     sections: [
       {
         id: "deployment-table",
@@ -870,12 +954,12 @@ export const DOCS_PAGES: DocsPage[] = [
               columns: ["Contract", "Address", "Role"],
               rows: [
                 ["QuoteVerifier", "0x9197...e2e6", "Signed quote verification"],
-                ["ReferenceRegistry", "0xF177...d8C3", "Canonical market refs and resolutions"],
-                ["PositionToken", "0x9085...B526", "ERC-721 position receipts"],
-                ["LPVault", "0x754d...396e", "LP collateral and redemption delay"],
-                ["LatticeCore", "0xaE23...0964", "Stack execution core"],
+                ["ReferenceRegistry", "0xF177...d8C3", "Canonical market references and resolutions"],
+                ["PositionToken", "0x9085...B526", "ERC-721 stack receipts"],
+                ["LPVault", "0x754d...396e", "LP collateral and delayed redemption"],
+                ["LatticeCore", "0xaE23...0964", "Structured stack execution core"],
                 ["SettlementManager", "0x8332...e112", "Deterministic settlement"],
-                ["CompositeVault", "0xb4B1...2D31", "Basket/composite support"],
+                ["CompositeVault", "0xb4B1...2D31", "Composite product support"],
               ],
             },
           },
@@ -883,7 +967,7 @@ export const DOCS_PAGES: DocsPage[] = [
       },
       {
         id: "network",
-        title: "Network",
+        title: "Network facts",
         blocks: [
           {
             type: "table",
@@ -893,7 +977,8 @@ export const DOCS_PAGES: DocsPage[] = [
                 ["Network", "Robinhood Chain Testnet"],
                 ["Chain ID", "46630"],
                 ["Collateral", "Mock USDC"],
-                ["Deployment date", "2026-06-11"],
+                ["Withdrawal delay", "7 days"],
+                ["Stack bounds", "2 to 3 legs"],
               ],
             },
           },
@@ -908,7 +993,7 @@ export const DOCS_PAGES: DocsPage[] = [
     eyebrow: "Reference",
     title: "API Surface",
     summary:
-      "The docs surface is consumer-oriented, but the backend route layer is what ties builder UX, copy flows, portfolio, earn, AI, and execution together.",
+      "The frontend docs are consumer-oriented, but the backend route layer is what ties builder UX, copy flows, portfolio, earn, AI, rooms, and execution together.",
     sections: [
       {
         id: "public-routes",
@@ -920,8 +1005,12 @@ export const DOCS_PAGES: DocsPage[] = [
               columns: ["Route", "Purpose"],
               rows: [
                 ["GET /stacks/leaderboard", "Public leaderboard over settled structured positions."],
-                ["GET /stacks/bets/:betCode", "Public stack share card and copy-source payload."],
-                ["GET /stacks/composites", "Curated composite and themed stack ideas."],
+                ["GET /stacks/bets/:betCode", "Public stack share page and copy-source payload."],
+                ["GET /stacks/composites", "Curated thematic stack and composite ideas."],
+                ["GET /stacks/rooms", "Public room directory and featured thesis surfaces."],
+                ["GET /stacks/rooms/:roomSlug", "Public room detail with composition, presence summary, and recent feed context."],
+                ["GET /stacks/rooms/:roomSlug/feed", "Room feed payload for live post streams."],
+                ["GET /markets/:marketId/comments", "Public threaded market comments."],
               ],
             },
           },
@@ -939,10 +1028,16 @@ export const DOCS_PAGES: DocsPage[] = [
                 ["GET /me/portfolio", "Portfolio summary and story metrics."],
                 ["GET /me/portfolio/stacks", "Full stack position feed."],
                 ["GET /me/earn", "Vault overview and LP account state."],
-                ["POST /stacks/quote", "Get a signed executable stack quote."],
-                ["POST /stacks/execute", "Execute the stack via smart-account flow."],
+                ["POST /stacks/quote", "Return a signed executable stack quote."],
+                ["POST /stacks/execute", "Execute the stack through sponsored AA."],
                 ["POST /stacks/ai/suggest", "Generate AI-assisted stack suggestions."],
                 ["POST /stacks/ai/explain", "Generate pricing and correlation explanations."],
+                ["POST /stacks/rooms/:roomSlug/posts", "Publish a room thesis post, optionally with a bet code."],
+                ["POST /stacks/rooms/:roomSlug/posts/:postId/reactions/:reaction", "Toggle room-post reactions."],
+                ["POST /stacks/rooms/:roomSlug/presence", "Heartbeat live room presence."],
+                ["POST /markets/:marketId/comments", "Create a market comment."],
+                ["POST /markets/:marketId/comments/:commentId/replies", "Create a threaded reply."],
+                ["POST /comments/:commentId/likes", "Toggle a comment like."],
               ],
             },
           },
@@ -957,7 +1052,7 @@ export const DOCS_PAGES: DocsPage[] = [
     eyebrow: "Reference",
     title: "System Facts",
     summary:
-      "This page collects the stable protocol numbers that shape the current product configuration on testnet.",
+      "This page collects the stable protocol and product facts that define the current live testnet configuration.",
     sections: [
       {
         id: "key-numbers",
@@ -968,12 +1063,32 @@ export const DOCS_PAGES: DocsPage[] = [
             value: {
               columns: ["Parameter", "Value", "Description"],
               rows: [
-                ["Chain ID", "46630", "Robinhood Chain Testnet binding used in the live environment."],
-                ["Collateral token", "Mock USDC", "Current testnet settlement and vault asset."],
-                ["Minimum legs", "2", "Configured lower bound for structured stacks."],
-                ["Maximum legs", "3", "Configured upper bound for structured stacks."],
-                ["Payout cap", "100x", "Maximum payout multiplier enforced by risk config."],
-                ["Withdrawal delay", "7 days", "LPVault redemption delay before claim."],
+                ["Chain ID", "46630", "Robinhood Chain Testnet binding used by the live environment."],
+                ["Collateral token", "Mock USDC", "Current vault and settlement asset."],
+                ["Minimum legs", "2", "Lower bound for structured stacks."],
+                ["Maximum legs", "3", "Upper bound for structured stacks."],
+                ["Payout cap", "100x", "Risk ceiling enforced by the protocol."],
+                ["Withdrawal delay", "7 days", "LP redemption delay before claim."],
+              ],
+            },
+          },
+        ],
+      },
+      {
+        id: "project-meta",
+        title: "Project metadata",
+        blocks: [
+          {
+            type: "table",
+            value: {
+              columns: ["Field", "Value"],
+              rows: [
+                ["Frontend", "SolidJS"],
+                ["Backend", "Rust"],
+                ["Contracts", "Solidity"],
+                ["Chain", "Robinhood Chain Testnet"],
+                ["Wallet execution", "Sponsored smart accounts"],
+                ["Fundraising status", "N/A"],
               ],
             },
           },
