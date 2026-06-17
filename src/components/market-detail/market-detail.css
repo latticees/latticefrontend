@@ -2255,6 +2255,52 @@
   gap: 8px;
 }
 
+.pm-trade-panel__builder-card {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(67, 120, 255, 0.18);
+  background:
+    linear-gradient(180deg, rgba(67, 120, 255, 0.08), rgba(67, 120, 255, 0.03)),
+    #ffffff;
+}
+
+.pm-trade-panel__builder-kicker {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #315efb;
+}
+
+.pm-trade-panel__builder-copy {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--pm-text);
+}
+
+.pm-trade-panel__builder-steps {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+  color: var(--pm-text-secondary);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+html[data-theme="dark"] .pm-trade-panel__builder-card {
+  border-color: rgba(135, 191, 255, 0.2);
+  background:
+    linear-gradient(180deg, rgba(67, 120, 255, 0.18), rgba(67, 120, 255, 0.06)),
+    rgba(9, 14, 24, 0.92);
+}
+
+html[data-theme="dark"] .pm-trade-panel__builder-kicker {
+  color: #87bfff;
+}
+
 .pm-trade-panel__quote {
   display: flex;
   align-items: center;

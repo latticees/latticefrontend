@@ -3,12 +3,7 @@ import type {
   EarnActionResponse,
   EarnDepositRequest,
   EarnRedeemRequest,
-  CancelOrderRequest,
-  CancelOrderResponse,
-  CreateOrderRequest,
-  CreateOrderResponse,
   MyEarnResponse,
-  MyOrdersResponse,
   MyPortfolioResponse,
   OrderClientOptions,
 } from "./types.ts";
@@ -18,29 +13,18 @@ function readViteEnv(key: "VITE_API_BASE_URL"): string | undefined {
 }
 
 export interface OrderClient {
-  fetchMyOrders(token: string): Promise<MyOrdersResponse>;
   fetchMyPortfolio(token: string): Promise<MyPortfolioResponse>;
   fetchMyEarn(token: string): Promise<MyEarnResponse>;
   depositToEarn(token: string, payload: EarnDepositRequest): Promise<EarnActionResponse>;
   requestEarnRedeem(token: string, payload: EarnRedeemRequest): Promise<EarnActionResponse>;
   cancelEarnRedeem(token: string): Promise<EarnActionResponse>;
   claimEarnRedeem(token: string): Promise<EarnActionResponse>;
-  createOrder(token: string, payload: CreateOrderRequest): Promise<CreateOrderResponse>;
-  cancelOrder(token: string, payload: CancelOrderRequest): Promise<CancelOrderResponse>;
 }
 
 export function createOrderClient(options: OrderClientOptions = {}): OrderClient {
   const baseUrl = normalizeApiBaseUrl(options.baseUrl);
 
   return {
-    fetchMyOrders(token) {
-      return requestJson<MyOrdersResponse>(baseUrl, "/me/orders", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-    },
-
     fetchMyPortfolio(token) {
       return requestJson<MyPortfolioResponse>(baseUrl, "/me/portfolio", {
         headers: {
@@ -92,26 +76,6 @@ export function createOrderClient(options: OrderClientOptions = {}): OrderClient
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      });
-    },
-
-    createOrder(token, payload) {
-      return requestJson<CreateOrderResponse>(baseUrl, "/orders", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        json: payload,
-      });
-    },
-
-    cancelOrder(token, payload) {
-      return requestJson<CancelOrderResponse>(baseUrl, "/orders/cancel", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        json: payload,
       });
     },
   };

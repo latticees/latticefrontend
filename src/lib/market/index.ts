@@ -33,8 +33,6 @@ export type {
 } from "./feed-tabs.ts";
 export type { GroupedMarketEvent } from "./view.ts";
 export type {
-  BuyMarketFieldsRequest,
-  BuyMarketRequest,
   CategoriesResponse,
   CategoryDetailResponse,
   CategorySummaryResponse,
@@ -98,7 +96,6 @@ export type {
   MarketResolutionStateResponse,
   MarketResponse,
   MarketStatsResponse,
-  MarketTradeExecutionResponse,
   MarketTradeFillResponse,
   MarketTradingStatus,
   MarketTradesResponse,
@@ -112,8 +109,6 @@ export type {
   PublicMarketCardResponse,
   RelatedMarketsResponse,
   SearchMarketsQuery,
-  SellMarketFieldsRequest,
-  SellMarketRequest,
   SuggestStackAiRequest,
   StackQuoteEnvelopeResponse,
   StackQuoteLegResponse,

@@ -115,6 +115,9 @@ export default function MarketDetailPage(props: MarketDetailPageProps) {
                 selectedStackOutcomeByMarketId().get(props.data.selectedMarketId) ===
                 props.selectedOutcomeIndex
               }
+              selectedStackOutcomeIndex={
+                selectedStackOutcomeByMarketId().get(props.data.selectedMarketId) ?? null
+              }
               onToggleStackOutcome={outcomeIndex =>
                 toggleStackOutcome(props.data.selectedMarket, outcomeIndex)
               }

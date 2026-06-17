@@ -209,32 +209,6 @@ function samplePreparedTransaction(kind = "trade") {
   };
 }
 
-function sampleTradeResponse(overrides: Record<string, unknown> = {}) {
-  return {
-    event: sampleEventResponse(),
-    on_chain: sampleOnChainResponse(),
-    market: sampleMarketResponse(),
-    wallet_address: "0x0000000000000000000000000000000000000123",
-    account_kind: "external_eoa",
-    action: "buy",
-    outcome_index: 0,
-    outcome_label: "Yes",
-    execution_mode: "external_wallet",
-    execution_status: "prepared",
-    prepared_transactions: [
-      samplePreparedTransaction("approval"),
-      samplePreparedTransaction("trade"),
-    ],
-    usdc_amount: "10.00",
-    token_amount: "16.39",
-    price_bps: 6100,
-    price: 0.61,
-    market_quote: sampleMarketQuoteResponse(),
-    requested_at: "2026-04-03T12:00:00Z",
-    ...overrides,
-  };
-}
-
 function createMemoryStorage() {
   const store = new Map<string, string>();
 
@@ -410,80 +384,6 @@ test("listHomeEvents preserves child market order and compact labels", async () 
   assert.equal(response.events[0]?.markets?.[0]?.sort_order, 0);
   assert.equal(response.events[0]?.markets?.[1]?.label, "Roberto Sánchez Palomino");
   assert.equal(response.events[0]?.markets?.[1]?.sort_order, 1);
-});
-
-test("buyMarket posts an authenticated payload to /markets/{market_id}/buy", async () => {
-  const client = createMarketClient({ baseUrl: apiBaseUrl });
-
-  globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
-    calls.push({ input, init });
-    return jsonResponse(sampleTradeResponse());
-  }) as typeof fetch;
-
-  const response = await client.buyMarket("session-token", sampleMarketId, {
-    trade: {
-      outcome_index: 0,
-      usdc_amount: "5.25",
-    },
-  });
-
-  assert.equal(response.execution_mode, "external_wallet");
-  assert.equal(String(calls[0].input), `http://127.0.0.1:8080/markets/${sampleMarketId}/buy`);
-  assert.equal(calls[0].init?.method, "POST");
-
-  const headers = new Headers(calls[0].init?.headers);
-  assert.equal(headers.get("Authorization"), "Bearer session-token");
-  assert.equal(headers.get("Accept"), "application/json");
-  assert.equal(headers.get("Content-Type"), "application/json");
-  assert.equal(
-    calls[0].init?.body,
-    JSON.stringify({
-      trade: {
-        outcome_index: 0,
-        usdc_amount: "5.25",
-      },
-    }),
-  );
-});
-
-test("sellMarket posts an authenticated payload to /markets/{market_id}/sell", async () => {
-  const client = createMarketClient({ baseUrl: apiBaseUrl });
-
-  globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
-    calls.push({ input, init });
-    return jsonResponse(
-      sampleTradeResponse({
-        action: "sell",
-        execution_mode: "smart_account",
-        execution_status: "submitted",
-        tx_hash: "0xsmartaccounttx",
-        prepared_transactions: undefined,
-      }),
-    );
-  }) as typeof fetch;
-
-  const response = await client.sellMarket("session-token", sampleMarketId, {
-    trade: {
-      outcome_index: 1,
-      token_amount: "12.5",
-    },
-  });
-
-  assert.equal(response.execution_mode, "smart_account");
-  assert.equal(response.tx_hash, "0xsmartaccounttx");
-  assert.equal(String(calls[0].input), `http://127.0.0.1:8080/markets/${sampleMarketId}/sell`);
-
-  const headers = new Headers(calls[0].init?.headers);
-  assert.equal(headers.get("Authorization"), "Bearer session-token");
-  assert.equal(
-    calls[0].init?.body,
-    JSON.stringify({
-      trade: {
-        outcome_index: 1,
-        token_amount: "12.5",
-      },
-    }),
-  );
 });
 
 test("listMarkets serializes all supported filters", async () => {

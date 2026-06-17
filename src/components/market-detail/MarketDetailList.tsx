@@ -50,7 +50,7 @@ export default function MarketDetailList(props: MarketDetailListProps) {
                       }}
                       onClick={() => props.onSelectOutcome(market.slug, quote.outcomeIndex)}
                     >
-                      <span class="pm-event-list__action-label">Buy {quote.label}</span>
+                      <span class="pm-event-list__action-label">Select {quote.label}</span>
                       <span>{quote.centsLabel}</span>
                     </button>
 

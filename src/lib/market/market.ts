@@ -5,7 +5,6 @@ import {
   normalizeLocale,
 } from "../i18n/config.ts";
 import type {
-  BuyMarketRequest,
   CategoriesResponse,
   CategoryDetailResponse,
   CreateStackQuoteRequest,
@@ -33,7 +32,6 @@ import type {
   MarketQuoteResponse,
   MarketResolutionReadResponse,
   MarketResponse,
-  MarketTradeExecutionResponse,
   MarketTradesResponse,
   MarketsHomeQuery,
   MarketsHomeResponse,
@@ -42,7 +40,6 @@ import type {
   PublicMarketCardResponse,
   RelatedMarketsResponse,
   SearchMarketsQuery,
-  SellMarketRequest,
   StackAiExplainResponse,
   StackAiSuggestResponse,
   StackBetResponse,
@@ -173,16 +170,6 @@ export interface MarketClient {
   listCategories(): Promise<CategoriesResponse>;
   fetchCategory(slug: string): Promise<CategoryDetailResponse>;
   listTags(): Promise<TagsResponse>;
-  buyMarket(
-    token: string,
-    marketId: string,
-    payload: BuyMarketRequest,
-  ): Promise<MarketTradeExecutionResponse>;
-  sellMarket(
-    token: string,
-    marketId: string,
-    payload: SellMarketRequest,
-  ): Promise<MarketTradeExecutionResponse>;
   suggestStackIdeas(payload: SuggestStackAiRequest): Promise<StackAiSuggestResponse>;
   explainStack(payload: ExplainStackAiRequest): Promise<StackAiExplainResponse>;
   fetchStackComposites(): Promise<StackCompositeCatalogResponse>;
@@ -1477,34 +1464,6 @@ export function createMarketClient(options: MarketClientOptions = {}): MarketCli
         );
 
       return { tags };
-    },
-
-    buyMarket(token, marketId, payload) {
-      return requestJson<MarketTradeExecutionResponse>(
-        baseUrl,
-        `/markets/${encodePathSegment(marketId)}/buy`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          json: payload,
-        },
-      );
-    },
-
-    sellMarket(token, marketId, payload) {
-      return requestJson<MarketTradeExecutionResponse>(
-        baseUrl,
-        `/markets/${encodePathSegment(marketId)}/sell`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          json: payload,
-        },
-      );
     },
 
     createStackQuote(payload) {

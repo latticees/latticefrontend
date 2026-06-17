@@ -1066,7 +1066,7 @@ export default function MarketPricePanel(props: MarketPricePanelProps) {
                   }}
                   onClick={() => props.onSelectOutcome(quote.outcomeIndex)}
                 >
-                  <span class="pm-market-stage__quote-label">Buy {quote.label}</span>
+                  <span class="pm-market-stage__quote-label">Select {quote.label}</span>
                   <strong>{quote.centsLabel}</strong>
                 </button>
               )}

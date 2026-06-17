@@ -90,11 +90,11 @@ function localizeOutcomeLabel(
   }
 
   if (normalized === "yes" || normalized === "buy yes") {
-    return normalized === "buy yes" ? `Buy ${t("common.yes")}` : t("common.yes");
+    return t("common.yes");
   }
 
   if (normalized === "no" || normalized === "buy no") {
-    return normalized === "buy no" ? `Buy ${t("common.no")}` : t("common.no");
+    return t("common.no");
   }
 
   if (normalized === "draw") {

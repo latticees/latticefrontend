@@ -184,24 +184,6 @@ export interface MarketQuoteResponse {
   spread_bps: number;
 }
 
-export interface BuyMarketFieldsRequest {
-  outcome_index: number;
-  usdc_amount: string;
-}
-
-export interface BuyMarketRequest {
-  trade: BuyMarketFieldsRequest;
-}
-
-export interface SellMarketFieldsRequest {
-  outcome_index: number;
-  token_amount: string;
-}
-
-export interface SellMarketRequest {
-  trade: SellMarketFieldsRequest;
-}
-
 export interface StackQuoteLegRequest {
   market_id: Uuid;
   outcome: number;
@@ -574,27 +556,6 @@ export interface PreparedWalletCallResponse {
   data: string;
   value: string;
   description: string;
-}
-
-export interface MarketTradeExecutionResponse {
-  event: EventResponse;
-  on_chain: EventOnChainResponse;
-  market: MarketResponse;
-  wallet_address: string;
-  account_kind: string;
-  action: string;
-  outcome_index: number;
-  outcome_label: string;
-  execution_mode: string;
-  execution_status: string;
-  tx_hash?: string;
-  prepared_transactions?: PreparedWalletCallResponse[];
-  usdc_amount: string;
-  token_amount: string;
-  price_bps: number;
-  price: number;
-  market_quote: MarketQuoteResponse;
-  requested_at: IsoDateTimeString;
 }
 
 export interface MarketResolutionStateResponse {
